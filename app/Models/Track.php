@@ -2,47 +2,38 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Track extends Model
 {
+    use HasFactory;
+
+    protected $table = 'tracks';
+
     protected $fillable = [
         'title',
+        'artist',
         'album_id',
-        'duration_ms',
         'track_number',
-        'explicit',
-        'popularity'
+        'duration',
+        'popularity',
+        'file_path',
     ];
 
+    protected $casts = [
+        'track_number' => 'integer',
+        'duration' => 'integer',
+        'popularity' => 'integer',
+        'album_id' => 'integer',
+        'file_path' => 'string',
+    ];
+
+    /**
+     * Relación: una canción pertenece a un álbum.
+     */
     public function album()
     {
         return $this->belongsTo(Album::class);
-    }
-
-    public function artists()
-    {
-        return $this->belongsToMany(Artist::class)->withPivot('role');
-    }
-
-    public function genres()
-    {
-        return $this->belongsToMany(Genre::class);
-    }
-
-    public function audioFeatures()
-    {
-        return $this->hasOne(AudioFeature::class);
-    }
-
-    public function playlists()
-    {
-        return $this->belongsToMany(Playlist::class)
-                    ->withPivot('position', 'added_at');
-    }
-
-    public function listeningHistory()
-    {
-        return $this->hasMany(ListeningHistory::class);
     }
 }

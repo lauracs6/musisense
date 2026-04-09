@@ -6,15 +6,34 @@ use Illuminate\Database\Eloquent\Model;
 
 class Album extends Model
 {
-    protected $fillable = ['title', 'release_date', 'album_type'];
+    protected $fillable = [
+        'title', 'year', 'cover', 'type', 'status'
+    ];
 
+    // Relación muchos a muchos con Artist
     public function artists()
     {
-        return $this->belongsToMany(Artist::class)->withPivot('role');
+        return $this->belongsToMany(Artist::class, 'album_artist')
+                    ->withPivot('role')
+                    ->withTimestamps();
     }
 
-    public function tracks()
+    // Método auxiliar para obtener el artista principal
+    public function mainArtist()
     {
-        return $this->hasMany(Track::class);
+        return $this->artists()->wherePivot('role', 'main')->first();
+    }
+
+    public function genres()
+    {
+        return $this->belongsToMany(Genre::class, 'album_genre')
+                    ->withPivot('role')
+                    ->withTimestamps();
+    }
+
+    // Método auxiliar para obtener el género principal
+    public function mainGenre()
+    {
+        return $this->genres()->wherePivot('role', 'main')->first();
     }
 }

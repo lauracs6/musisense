@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Genre extends Model
 {
-    public $timestamps = false;
+    protected $fillable = ['name', 'active'];
 
-    protected $fillable = ['name'];
-
-    public function tracks()
+    public function albums()
     {
-        return $this->belongsToMany(Track::class);
+        return $this->belongsToMany(Album::class, 'album_genre')
+                    ->withPivot('role')
+                    ->withTimestamps();
     }
 }

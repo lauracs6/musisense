@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('genres', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
+            $table->enum('status', ['y', 'n'])->default('y'); // Para marcar géneros como activos/inactivos
+            $table->timestamps();
         });
     }
 

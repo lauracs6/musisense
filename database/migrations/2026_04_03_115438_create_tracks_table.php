@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('tracks', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->foreignId('album_id')->nullable()->constrained()->nullOnDelete();
-            $table->integer('duration_ms');
-            $table->integer('track_number')->nullable();
-            $table->boolean('explicit')->default(false);
+            $table->string('artist');
+            $table->foreignId('album_id')->nullable()->constrained()->onDelete('set null');
+            $table->integer('track_number');
+            $table->integer('duration');         
             $table->integer('popularity')->default(0);
+            $table->string('file_path')->nullable(); // <--- NUEVO
             $table->timestamps();
         });
     }

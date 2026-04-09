@@ -8,19 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('album_artist', function (Blueprint $table) {
+        Schema::create('album_genre', function (Blueprint $table) {
             $table->id();
             $table->foreignId('album_id')->constrained()->onDelete('cascade');
-            $table->foreignId('artist_id')->constrained()->onDelete('cascade');
+            $table->foreignId('genre_id')->constrained()->onDelete('cascade');
             $table->string('role')->default('main');
             $table->timestamps();
 
-            $table->unique(['album_id', 'artist_id', 'role']);
+            $table->unique(['album_id', 'genre_id', 'role']);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('album_artist');
+        Schema::dropIfExists('album_genre');
     }
 };
