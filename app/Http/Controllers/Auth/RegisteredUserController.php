@@ -8,79 +8,50 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
-use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
     /**
-     * Display the registration view.
+     * Handle an incoming API registration request.
      */
-    public function create(): View
+    public function store(Request $request): JsonResponse
     {
-        return view('auth.register');
-    }
-
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    public function store(Request $request): RedirectResponse|JsonResponse
-    {
-        $isApiRequest = $request->is('api/*');
-
-        $rules = [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+        // Validación para API (solo los campos que existen en tu tabla 'users')
+        $request->validate([
+            'username' => ['required', 'string', 'max:255', 'unique:users,username'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ];
+        ]);
 
-        if ($isApiRequest) {
-            $rules['lastname'] = ['required', 'string', 'max:255'];
-            $rules['dni'] = ['required', 'string', 'max:255', 'unique:'.User::class];
-            $rules['phone'] = ['required', 'string', 'max:255'];
-        }
-
-        $data = $request->validate($rules);
-
-        if ($isApiRequest) {
-            $data['lastname'] = mb_strtoupper($data['lastname']);
-            $data['dni'] = mb_strtoupper($data['dni']);
-        }
-
-        $defaultRoleId = Role::where('name', 'listener')->value('id');
-
-        if (! $defaultRoleId) {
+        // Obtener el rol 'customer' (por defecto)
+        $defaultRole = Role::where('name', 'customer')->first();
+        if (!$defaultRole) {
             return response()->json([
-                'message' => 'No existe el rol por defecto "listener". Ejecuta los seeders de roles.',
+                'message' => 'El rol "customer" no existe. Ejecuta los seeders de roles.'
             ], 500);
         }
 
+        // Crear usuario
         $user = User::create([
-            'name' => $data['username'],            
-            'email' => $data['email'],            
-            'password' => Hash::make($data['password']),
-            'role_id' => $defaultRoleId,
+            'username' => $request->username,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role_id' => $defaultRole->id,
+            'status' => 'y', // activo por defecto
         ]);
 
+        // Disparar evento de verificación de email (opcional)
         event(new Registered($user));
 
-        if ($isApiRequest || $request->expectsJson()) {
-            $token = $user->createToken('api')->plainTextToken;
+        // Crear token Sanctum
+        $token = $user->createToken('api')->plainTextToken;
 
-            return response()->json([
-                'token' => $token,
-                'user' => new UserResource($user->load('role')),
-            ], 201);
-        }
-
-        Auth::login($user);
-
-        return redirect(route('dashboard', absolute: false));
+        return response()->json([
+            'token' => $token,
+            'user' => new UserResource($user->load('role')),
+        ], 201);
     }
 }

@@ -75,15 +75,16 @@ class ImportMusicCommand extends Command
         if (empty($tags['title'])) {
             $tags['title'] = pathinfo($filePath, PATHINFO_FILENAME);
         }
+
         if (empty($tags['artist'])) {
-            $tags['artist'] = 'Artista desconocido';
+            $tags['artist'] = $tags['album_artist'] ?? 'Artista desconocido';
         }
 
         // --- 1. Artista principal del álbum ---
         $artistName = $tags['album_artist'] ?? $tags['artist'] ?? 'Artista desconocido';
         $artist = Artist::firstOrCreate(['name' => $artistName]);
 
-        // --- 2. Álbum (sin campo genre) ---
+        // --- 2. Álbum ---
         $albumData = [
             'title' => $tags['album'] ?? 'Álbum desconocido',
             'year' => $tags['year'] ?? null,
@@ -103,20 +104,21 @@ class ImportMusicCommand extends Command
         // Asignar artista principal
         $album->artists()->syncWithoutDetaching([$artist->id => ['role' => 'main']]);
 
-        // --- 3. Género (un solo género por álbum) ---
+        // --- 3. Género ---
         $genreName = $tags['genre'] ?? null;
         if (!empty($genreName)) {
             $genre = Genre::firstOrCreate(['name' => $genreName]);
             $album->genres()->syncWithoutDetaching([$genre->id => ['role' => 'main']]);
-        } else {
-            // Opcional: asignar un género por defecto (comentar si no se desea)
-            // $defaultGenre = Genre::firstOrCreate(['name' => 'Sin género']);
-            // $album->genres()->syncWithoutDetaching([$defaultGenre->id => ['role' => 'main']]);
         }
 
-        // --- 4. Carátula ---
+        // --- 4. Carátula (prioridad: incrustada -> externa) ---
         if (!$album->cover) {
             $coverPath = $this->extractAndSaveCover($filePath, $album->id);
+            if (!$coverPath) {
+                // Buscar archivo externo en la carpeta del álbum
+                $albumFolder = dirname($filePath);
+                $coverPath = $this->findExternalCover($albumFolder, $album->id);
+            }
             if ($coverPath) {
                 $album->cover = $coverPath;
                 $album->save();
@@ -166,10 +168,10 @@ class ImportMusicCommand extends Command
             'title' => ['title', 'titulo', '©nam'],
             'artist' => ['artist', 'artista', '©ART', '©aut'],
             'album' => ['album', '©alb'],
-            'album_artist' => ['albumartist', 'album artist', 'band', 'orchestra', 'aART', '©day'],
+            'album_artist' => ['albumartist', 'album artist', 'band', 'orchestra', 'aART', '©day', 'album_artist'],
             'track_number' => ['tracknumber', 'track_number', 'track', 'trkn'],
             'genre' => ['genre', 'genero', '©gen'],
-            'year' => ['year', 'date', 'originalyear', '©day'],
+            'year' => ['year', 'date', 'originalyear', '©day', 'creation_date'],
             'country' => ['country', '©cpr'],
             'releasetype' => ['releasetype'],
         ];
@@ -255,5 +257,35 @@ class ImportMusicCommand extends Command
 
         file_put_contents($fullPath, $pictureData);
         return $relativePath;
+    }
+
+    /**
+     * Busca una carátula externa en la carpeta del álbum.
+     * Nombre: cover.jpg
+     */
+    private function findExternalCover(string $albumFolder, int $albumId): ?string
+    {
+        $extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        $candidates = ['cover', 'folder', 'front', 'album', 'artwork'];
+
+        foreach ($candidates as $candidate) {
+            foreach ($extensions as $ext) {
+                $possiblePath = $albumFolder . '/' . $candidate . '.' . $ext;
+                if (file_exists($possiblePath)) {
+                    $coverName = 'album_' . $albumId . '_' . time() . '.' . $ext;
+                    $relativePath = 'covers/' . $coverName;
+                    $fullPath = storage_path('app/public/' . $relativePath);
+
+                    if (!is_dir(dirname($fullPath))) {
+                        mkdir(dirname($fullPath), 0755, true);
+                    }
+
+                    copy($possiblePath, $fullPath);
+                    return $relativePath;
+                }
+            }
+        }
+
+        return null;
     }
 }
