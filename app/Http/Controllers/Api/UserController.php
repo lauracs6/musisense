@@ -18,9 +18,7 @@ class UserController extends Controller
      * Listado de usuarios (solo admin).
      */
     public function index()
-    {
-        $this->authorize('viewAny', User::class);
-
+    {      
         $users = User::with('role')->orderBy('id')->get();
         return UserResource::collection($users);
     }
@@ -29,8 +27,7 @@ class UserController extends Controller
      * Mostrar un usuario concreto.
      */
     public function show(User $user): UserResource
-    {
-        $this->authorize('view', $user);
+    {        
         $user->load('role');
         return new UserResource($user);
     }
@@ -40,8 +37,6 @@ class UserController extends Controller
      */
     public function update(UserUpdateRequest $request, User $user): UserResource
     {
-        $this->authorize('update', $user);
-
         $data = $request->validated();
 
         if (array_key_exists('username', $data)) {
@@ -61,8 +56,6 @@ class UserController extends Controller
      */
     public function destroy(UserDestroyRequest $request, User $user): JsonResponse
     {
-        $this->authorize('delete', $user);
-
         DB::transaction(function () use ($user) {
             $user->tokens()->delete();
             $user->update(['status' => 'n']);

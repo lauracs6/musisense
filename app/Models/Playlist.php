@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class Playlist extends Model
 {
     protected $fillable = [
+        'id',
         'user_id',
         'name',
         'description',
-        'is_public'
+        'status',
     ];
 
     public function user()
@@ -21,6 +22,7 @@ class Playlist extends Model
     public function tracks()
     {
         return $this->belongsToMany(Track::class)
-                    ->withPivot('position', 'added_at');
+            ->withPivot('position') 
+            ->withTimestamps();
     }
 }

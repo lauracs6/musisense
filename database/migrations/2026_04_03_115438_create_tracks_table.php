@@ -17,9 +17,10 @@ return new class extends Migration
             $table->string('artist');
             $table->foreignId('album_id')->nullable()->constrained()->onDelete('set null');
             $table->integer('track_number');
-            $table->integer('duration');         
+            $table->integer('duration'); 
+            $table->enum('status', ['y', 'n'])->default('y');        
             $table->integer('popularity')->default(0);
-            $table->string('file_path')->nullable(); // <--- NUEVO
+            $table->string('file_path')->nullable();
             $table->timestamps();
         });
     }

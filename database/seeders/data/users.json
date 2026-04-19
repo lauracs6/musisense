@@ -1,64 +1,76 @@
 {
-  "users": [
-    {
-      "username": "x7_kai99",
-      "email": "maria.schmidt@example.de",
-      "password": "12345678"
-    },
-    {
-      "username": "neo_47x",
-      "email": "jean.dupont@example.fr",
-      "password": "qwerty123"
-    },
-    {
-      "username": "luna.byte_01",
-      "email": "paola.rossi@example.it",
-      "password": "12345678"
-    },
-    {
-      "username": "darko.77",
-      "email": "ivan.petrov@example.ru",
-      "password": "qwerty123"
-    },
-    {
-      "username": "zenith_x",
-      "email": "li.wei@example.cn",
-      "password": "admin1234"
-    },
-    {
-      "username": "pixel_ghost9",
-      "email": "yuki.tanaka@example.jp",
-      "password": "12345"
-    },
-    {
-      "username": "alpha.delta88",
-      "email": "john.smith@example.com",
-      "password": "qwerty123"
-    },
-    {
-      "username": "mystic_404",
-      "email": "sofia.garcia@example.es",
-      "password": "12345"
-    },
-    {
-      "username": "byte_runner",
-      "email": "ahmed.hassan@example.eg",
-      "password": "rigo1234"
-    },
-    {
-      "username": "void.21x",
-      "email": "anna.kowalska@example.pl",
-      "password": "asdfg123"
-    },
-    {
-      "username": "cr0nix_zz",
-      "email": "lucas.silva@example.br",
-      "password": "qwerty321"
-    },
-    {
-      "username": "n3bula_core",
-      "email": "oliver.mueller@example.de",
-      "password": "sober75"
-    }
-  ]
+    "users": [
+        {
+            "username": "laura92",
+            "email": "lauracabrerasagrera@gmail.com",
+            "password": "12345678",
+            "playlist_id": 1
+        },
+        {
+            "username": "neo_47x",
+            "email": "jean.dupont@example.fr",
+            "password": "qwerty123",
+            "playlist_id": 2
+        },
+        {
+            "username": "luna.byte_01",
+            "email": "paola.rossi@example.it",
+            "password": "12345678",
+            "playlist_id": 3
+        },
+        {
+            "username": "darko.77",
+            "email": "ivan.petrov@example.ru",
+            "password": "qwerty123",
+            "playlist_id": 4
+        },
+        {
+            "username": "zenith_x",
+            "email": "li.wei@example.cn",
+            "password": "admin1234",
+            "playlist_id": 5
+        },
+        {
+            "username": "pixel_ghost9",
+            "email": "yuki.tanaka@example.jp",
+            "password": "12345",
+            "playlist_id": 6
+        },
+        {
+            "username": "alpha.delta88",
+            "email": "john.smith@example.com",
+            "password": "qwerty123",
+            "playlist_id": 7
+        },
+        {
+            "username": "mystic_404",
+            "email": "sofia.garcia@example.es",
+            "password": "12345",
+            "playlist_id": 8
+        },
+        {
+            "username": "byte_runner",
+            "email": "ahmed.hassan@example.eg",
+            "password": "rigo1234",
+            "playlist_id": 9
+        },
+        {
+            "username": "void.21x",
+            "email": "anna.kowalska@example.pl",
+            "password": "asdfg123",
+            "playlist_id": 10
+        },
+        {
+            "username": "cr0nix_zz",
+            "email": "lucas.silva@example.br",
+            "password": "qwerty321",
+            "playlist_id": 11
+        },
+        {
+            "username": "n3bula_core",
+            "email": "oliver.mueller@example.de",
+            "password": "sober75",
+            "playlist_id": 12
+        }
+    ]
 }

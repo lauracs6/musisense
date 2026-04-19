@@ -13,8 +13,9 @@ return new class extends Migration
             $table->string('title');            
             $table->unsignedSmallInteger('year')->nullable();
             $table->string('cover')->nullable();
-            $table->enum('type', ['album', 'single', 'ep'])->default('album');
+            $table->enum('type', ['Album', 'Single', 'EP'])->default('Album');
             $table->enum('status', ['y', 'n'])->default('y');
+            $table->foreignId('genre_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

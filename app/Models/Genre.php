@@ -6,12 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Genre extends Model
 {
-    protected $fillable = ['name', 'active'];
+    protected $fillable = ['name', 'status'];
 
+    // Un género tiene muchos álbumes
     public function albums()
     {
-        return $this->belongsToMany(Album::class, 'album_genre')
-                    ->withPivot('role')
-                    ->withTimestamps();
+        return $this->hasMany(Album::class);
     }
 }

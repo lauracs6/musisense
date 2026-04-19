@@ -3,104 +3,67 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\UserResource;
-use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
-    /**
-     * Listado de usuarios con filtros (solo admin).
-     */
-    public function index(Request $request): AnonymousResourceCollection
+    // LISTADO + FILTROS
+    public function index(Request $request)
     {
-        $search = trim($request->query('q', ''));
-        $role = $request->query('role', 'all');
-        $status = $request->query('status', 'all');
+        $query = User::with(['playlists'])->withCount('playlists');
 
-        $users = User::query()
-            ->with('role')
-            ->when($search !== '', function ($query) use ($search) {
-                $query->where(function ($sub) use ($search) {
-                    $sub->where('username', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%");
-                });
-            })
-            ->when($role !== 'all', function ($query) use ($role) {
-                $query->whereHas('role', fn($q) => $q->where('name', $role));
-            })
-            ->when($status !== 'all', function ($query) use ($status) {
-                $query->where('status', $status === 'active' ? 'y' : 'n');
-            })
+        // SEARCH (name o email)
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('username', 'like', "%$search%")
+                  ->orWhere('email', 'like', "%$search%");
+            });
+        }
+
+        // FILTER STATUS
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $users = $query
             ->orderBy('id')
-            ->paginate(20)
-            ->withQueryString();
+            ->paginate(9)
+            ->withQueryString(); // mantiene filtros al cambiar página
 
-        return UserResource::collection($users);
+        return view('admin.users.index', compact('users'));
     }
 
-    /**
-     * Mostrar un usuario específico.
-     */
-    public function show(User $user): UserResource
+    // DETALLE
+    public function show(User $user)
     {
-        $user->load('role');
-        return new UserResource($user);
+        $user->load('playlists');
+
+        return view('admin.users.show', compact('user'));
     }
 
-    /**
-     * Actualizar un usuario (solo admin).
-     */
-    public function update(Request $request, User $user): JsonResponse
+    // EDITAR
+    public function edit(User $user)
     {
-        $validated = $request->validate([
-            'username' => ['sometimes', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'email' => ['sometimes', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'role_id' => ['sometimes', 'exists:roles,id'],
-            'status' => ['sometimes', Rule::in(['y', 'n'])],
+        return view('admin.users.edit', compact('user'));
+    }
+
+    // ACTUALIZAR
+    public function update(Request $request, User $user)
+    {
+        $data = $request->validate([
+            'username' => 'required|string|max:255|unique:users,username,' . $user->id,
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'status' => 'required|in:y,n',
         ]);
 
-        $user->update($validated);
-        $user->load('role');
+        $user->update($data);
 
-        return response()->json([
-            'message' => 'Usuario actualizado correctamente',
-            'user' => new UserResource($user),
-        ]);
-    }
-
-    /**
-     * Desactivar usuario (cambiar status a 'n').
-     */
-    public function deactivate(User $user): JsonResponse
-    {
-        $user->update(['status' => 'n']);
-        return response()->json(['message' => 'Usuario desactivado']);
-    }
-
-    /**
-     * Activar usuario (cambiar status a 'y').
-     */
-    public function activate(User $user): JsonResponse
-    {
-        $user->update(['status' => 'y']);
-        return response()->json(['message' => 'Usuario activado']);
-    }
-
-    /**
-     * Eliminar usuario (borrado lógico o físico según necesites).
-     * Aquí haremos borrado lógico (status='n') igual que deactivate.
-     * Si quieres borrado físico, cambia a $user->delete().
-     */
-    public function destroy(User $user): JsonResponse
-    {
-        // Opcional: eliminar tokens antes
-        $user->tokens()->delete();
-        $user->update(['status' => 'n']);
-        return response()->json(['message' => 'Usuario desactivado']);
+        return redirect()
+            ->route('admin.users.show', $user)
+            ->with('success', 'User updated');
     }
 }

@@ -1,23 +1,36 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
+<nav x-data="{ open: false }" class="bg-white border-b-2 border-indigo-700">
     <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                        <img src="{{ asset('images/MS.png') }}" alt="Logo" class="h-16 w-auto" />
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">                    
+
+                    <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')" class="text-indigo-800 font-semibold hover:text-indigo-400">
+                        {{ __('Users') }}
                     </x-nav-link>
-                    <!-- Enlace al listado de usuarios (Admin) -->
-                    <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
-                        {{ __('Usuarios') }}
+
+                    <x-nav-link :href="route('admin.playlists.index')" :active="request()->routeIs('admin.playlists.*')" class="text-indigo-800 font-semibold hover:text-indigo-400">
+                        {{ __('Playlists') }}
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('admin.genres.index')" :active="request()->routeIs('admin.genres.*')" class="text-indigo-800 font-semibold hover:text-indigo-400">
+                        {{ __('Genres') }}
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('admin.albums.index')" :active="request()->routeIs('admin.albums.*')" class="text-indigo-800 font-semibold hover:text-indigo-400">
+                        {{ __('Albums') }}
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('admin.tracks.index')" :active="request()->routeIs('admin.tracks.*')" class="text-indigo-800 font-semibold hover:text-indigo-400">
+                        {{ __('Tracks') }}
                     </x-nav-link>
                 </div>
                 

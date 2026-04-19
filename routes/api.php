@@ -5,6 +5,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\GenreController;
+use App\Http\Controllers\Api\AlbumController;
+use App\Http\Controllers\Api\TrackController;
+use App\Http\Controllers\Api\PlaylistController;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Requests\UserDestroyRequest;
 use App\Http\Requests\UserPasswordUpdateRequest;
@@ -51,6 +55,16 @@ Route::middleware(['api.key'])->group(function () {
     Route::put('/user/password', function (UserPasswordUpdateRequest $request) {
         return app(UserController::class)->updatePassword($request);
     });
+
+    // Rutas de géneros, álbumes, tracks y playlists
+    Route::get('/genres', [GenreController::class, 'index']);
+    Route::get('/genres/{genre}', [GenreController::class, 'show']);
+    Route::get('/albums', [AlbumController::class, 'index']);
+    Route::get('/albums/{album}', [AlbumController::class, 'show']);
+    Route::get('/tracks', [TrackController::class, 'index']);
+    Route::get('/tracks/{track}', [TrackController::class, 'show']);
+    Route::get('/playlists', [PlaylistController::class, 'index']);
+    Route::get('/playlists/{playlist}', [PlaylistController::class, 'show']);
 
     Route::post('/logout', function (Request $request) {
         $user = $request->user();
