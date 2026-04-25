@@ -62,6 +62,15 @@ class UserController extends Controller
 
         $user->update($data);
 
+        // si el usuario se desactiva → desactivar playlists
+        if ($data['status'] === 'n') {
+            $user->playlists()->update(['status' => 'n']);
+        }
+        // si el usuario se activa → activar playlists
+        if ($data['status'] === 'y') {
+            $user->playlists()->update(['status' => 'y']);
+        }         
+
         return redirect()
             ->route('admin.users.show', $user)
             ->with('success', 'User updated');

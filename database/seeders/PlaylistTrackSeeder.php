@@ -11,10 +11,8 @@ class PlaylistTrackSeeder extends Seeder
     public function run(): void
     {
         foreach (Playlist::all() as $playlist) {
-
-            $tracks = Track::inRandomOrder()
-                ->limit(10)
-                ->pluck('id');
+            
+            $playlist->tracks()->detach();
 
             $tracks = Track::inRandomOrder()->take(10)->get();
 

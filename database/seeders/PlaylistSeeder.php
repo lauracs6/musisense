@@ -20,7 +20,6 @@ class PlaylistSeeder extends Seeder
 
         foreach ($json['playlists'] as $item) {
             Playlist::create([
-                'id' => $item['id'],
                 'name' => $item['name'],
                 'user_id' => $item['user_id'],
                 'description' => $item['description'] ?? null,

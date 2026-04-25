@@ -32,6 +32,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // PLAYLISTS
     Route::get('/playlists', [PlaylistController::class, 'index'])->name('playlists.index');
+    Route::get('/playlists/{playlist}', [PlaylistController::class, 'show'])->name('playlists.show');
+    Route::get('/playlists/{playlist}/edit', [PlaylistController::class, 'edit'])->name('playlists.edit');
+    Route::put('/playlists/{playlist}', [PlaylistController::class, 'update'])->name('playlist.update');
 
     // GENRES
     Route::get('/genres', [GenreController::class, 'index'])->name('genres.index');

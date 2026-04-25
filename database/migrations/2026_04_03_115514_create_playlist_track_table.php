@@ -15,8 +15,7 @@ return new class extends Migration
             $table->foreignId('playlist_id')->constrained()->cascadeOnDelete();
             $table->foreignId('track_id')->constrained()->cascadeOnDelete();
             $table->integer('position')->nullable();
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+            $table->timestamps();
             $table->primary(['playlist_id','track_id']);
         });
     }

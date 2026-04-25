@@ -13,14 +13,6 @@
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">                    
 
-                    <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')" class="text-indigo-800 font-semibold hover:text-indigo-400">
-                        {{ __('Users') }}
-                    </x-nav-link>
-
-                    <x-nav-link :href="route('admin.playlists.index')" :active="request()->routeIs('admin.playlists.*')" class="text-indigo-800 font-semibold hover:text-indigo-400">
-                        {{ __('Playlists') }}
-                    </x-nav-link>
-
                     <x-nav-link :href="route('admin.genres.index')" :active="request()->routeIs('admin.genres.*')" class="text-indigo-800 font-semibold hover:text-indigo-400">
                         {{ __('Genres') }}
                     </x-nav-link>
@@ -31,6 +23,14 @@
 
                     <x-nav-link :href="route('admin.tracks.index')" :active="request()->routeIs('admin.tracks.*')" class="text-indigo-800 font-semibold hover:text-indigo-400">
                         {{ __('Tracks') }}
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')" class="text-indigo-800 font-semibold hover:text-indigo-400">
+                        {{ __('Users') }}
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('admin.playlists.index')" :active="request()->routeIs('admin.playlists.*')" class="text-indigo-800 font-semibold hover:text-indigo-400">
+                        {{ __('Playlists') }}
                     </x-nav-link>
                 </div>
                 
