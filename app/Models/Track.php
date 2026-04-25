@@ -17,6 +17,7 @@ class Track extends Model
         'album_id',
         'track_number',
         'duration',
+        'status',
         'popularity',
         'file_path',
     ];

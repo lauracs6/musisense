@@ -1,78 +1,83 @@
 <x-app-layout>
-<div class="min-h-screen p-6 bg-white text-gray-800">
-
-    <h1 class="text-2xl font-semibold mb-6">Genres</h1>
+    <x-slot name="header">
+        Genres
+    </x-slot>
 
     <!-- Filters -->
-    <form method="GET" class="mb-6 flex gap-3">
-        <input type="text" name="search" placeholder="Search..."
-            value="{{ request('search') }}"
-            class="border rounded px-3 py-2 w-64">
+    <form method="GET" class="mb-6 flex flex-wrap gap-3">
+        <input type="text" name="search" value="{{ request('search') }}"
+            placeholder="Search..."
+            class="border-2 border-sky-400 p-2 w-64">
 
-        <select name="status" class="border rounded px-3 py-2">
+        <select name="status" class="border-2 border-yellow-300 p-2 pr-8 w-48">
             <option value="">All</option>
             <option value="y" @selected(request('status')=='y')>Active</option>
             <option value="n" @selected(request('status')=='n')>Inactive</option>
         </select>
 
-        <button class="bg-indigo-700 text-white px-4 py-2 rounded-lg hover:bg-indigo-800">
+        <button class="bg-gray-700 text-gray-300 hover:bg-gray-100 hover:text-gray-400 border-2 border-gray-500 px-4 py-2 rounded-xl">
             Filter
         </button>
 
         <a href="{{ route('admin.genres.index') }}"
-            class="bg-gray-300 px-4 py-2 rounded-lg">
+           class="bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-400 border-2 border-gray-500 px-4 py-2 rounded-xl">
             Reset
         </a>
     </form>
 
-    <!-- Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        @foreach($genres as $genre)
-        <div class="border rounded-2xl p-4 hover:shadow-md hover:shadow-indigo-800 transition flex flex-col justify-between">
+    <!-- TABLE -->
+    <div class="overflow-x-auto bg-white shadow">
+        <table class="w-full table-fixed divide-y divide-gray-200">
 
-            <div class="flex justify-between items-center">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase w-1/12">ID</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase w-4/12">Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase w-2/12">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase w-2/12">Total Albums</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase w-3/12">Actions</th>
+                </tr>
+            </thead>
 
-                <div>
-                    <h2 class="text-lg font-semibold">
+            <tbody class="divide-y divide-gray-200">
+                @foreach($genres as $genre)
+                <tr class="hover:bg-gray-50">
+
+                    <td class="px-6 py-4 text-sm text-gray-700">
+                        {{ $genre->id }}
+                    </td>
+
+                    <td class="px-6 py-4 text-sm text-gray-700 truncate">
                         {{ $genre->name }}
-                    </h2>
+                    </td>
 
-                    <p class="mt-2">
-                        Status:
-                        <span class="font-semibold {{ $genre->status === 'y' ? 'text-green-600' : 'text-red-600' }}">
+                    <td class="px-6 py-4 text-sm">
+                        <span class="px-2 py-1 rounded-full text-xs {{ $genre->status === 'y' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                             {{ $genre->status === 'y' ? 'Active' : 'Inactive' }}
                         </span>
-                    </p>
-                </div>
+                    </td>
 
-                <!-- Actions -->
-                <div class="flex gap-2">
+                    <td class="px-6 py-4 text-sm text-gray-700">
+                        {{ $genre->albums_count }}
+                    </td>
 
-                    <!-- Edit -->
-                    <a href="{{ route('admin.genres.edit', $genre) }}"
-                       class="bg-indigo-700 text-white px-3 py-1 rounded-lg text-sm hover:bg-indigo-800">
-                        Edit
-                    </a>                    
+                    <td class="px-6 py-4 text-sm space-x-2">
+                        <a href="{{ route('admin.genres.show', $genre) }}"
+                           class="bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-400 border-2 border-gray-300 px-4 py-2 rounded-xl">
+                            Show
+                        </a>
 
-                </div>
-            </div>
+                        <a href="{{ route('admin.genres.edit', $genre) }}"
+                           class="bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-400 border-2 border-gray-300 px-4 py-2 rounded-xl">
+                            Edit
+                        </a>
+                    </td>
 
-            <!-- Albums -->
-            <div class="mt-3">
-                <p class="text-md font-bold text-gray-800 mb-1">Albums</p>
+                </tr>
+                @endforeach
+            </tbody>
 
-                <ul class="text-sm text-gray-800 space-y-1">
-                    @foreach($genre->albums as $album)
-                        <li class="{{ $album->status === 'n' ? 'line-through text-gray-900' : '' }}">
-                            #{{ $album->id }} - {{ $album->title }}
-                        </li>                        
-                    @endforeach
-                </ul>
-            </div>
-
-        </div>
-        @endforeach
+        </table>
     </div>
 
-</div>
 </x-app-layout>

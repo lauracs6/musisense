@@ -1,49 +1,43 @@
 <x-app-layout>
-<div class="min-h-screen p-6 bg-white text-gray-800">
+    <x-slot name="header">
+        Album Details
+    </x-slot>
 
-    <div class="max-w-3xl mx-auto border p-6 rounded-2xl hover:shadow-md hover:shadow-indigo-800">
-
-        <div class="flex justify-between mb-4">
-            <h1 class="text-2xl font-bold">Album Details</h1>            
-
-            <a href="{{ route('admin.albums.index') }}"
-               class="bg-indigo-700 text-white px-4 py-2 rounded-lg hover:bg-indigo-800">
-                Back
-            </a>
+    <div class="max-w-3xl mx-auto bg-white p-6 shadow border-l-4 border-indigo-500">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold">Album: {{ $album->title }}</h2>
+            <a href="{{ route('admin.albums.index') }}" class="bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-400 border-2 border-gray-300 px-4 py-2 rounded-xl">Back</a>
         </div>
 
+        <!-- Cover Image -->
         @if($album->cover)
-            <img src="{{ asset('storage/'.$album->cover) }}"
-                 class="w-20 h-20 object-cover rounded-lg mb-4">
+            <img src="{{ asset('storage/'.$album->cover) }}" class="w-32 h-32 object-cover rounded-lg mb-4">
         @endif
 
-        <p><strong>Id:</strong> {{ $album->id }}</p>
-        <p><strong>Title:</strong> {{ $album->title }}</p>
-        <p><strong>Artist:</strong> {{ $album->artists->first()->name ?? 'Unknown' }}</p>
-        <p><strong>Year:</strong> {{ $album->year }}</p>
-        <p><strong>Type:</strong> {{ $album->type }}</p>
-        <p><strong>Genre:</strong> {{ $album->genre->name ?? 'N/A' }}</p>
+        <!-- Album Info -->
+        <dl class="grid grid-cols-1 gap-2 text-sm">
+            <div><dt class="font-semibold inline">ID:</dt> <dd class="inline">{{ $album->id }}</dd></div>
+            <div><dt class="font-semibold inline">Title:</dt> <dd class="inline">{{ $album->title }}</dd></div>
+            <div><dt class="font-semibold inline">Artist:</dt> <dd class="inline">{{ $album->artists->first()->name ?? 'Unknown' }}</dd></div>
+            <div><dt class="font-semibold inline">Year:</dt> <dd class="inline">{{ $album->year }}</dd></div>
+            <div><dt class="font-semibold inline">Type:</dt> <dd class="inline">{{ $album->type }}</dd></div>
+            <div><dt class="font-semibold inline">Genre:</dt> <dd class="inline">{{ $album->genre->name ?? 'N/A' }}</dd></div>
+            <div><dt class="font-semibold inline">Status:</dt> <dd class="inline">{{ $album->status === 'y' ? 'Active' : 'Inactive' }}</dd></div>
+        </dl>
 
-        </br>
         <hr class="my-4">
-        </br>
 
-        <h2 class="font-semibold mb-2">Tracks</h2>
+        <!-- Tracks List -->
+        <h3 class="font-semibold mb-2">Tracks</h3>
+        <ul class="divide-y divide-gray-200">
+            @foreach($album->tracks as $track)
+                <li class="py-2 text-sm">{{ $track->id }}. {{ $track->title }}</li>
+            @endforeach
+        </ul>
 
-        @foreach($album->tracks as $track)
-            <div class="text-md text-gray-700 border-b py-2">
-                {{ $track->id }}. {{ $track->title }}
-            </div>
-        @endforeach
-
-        <div class="mt-4 flex justify-end gap-2">
-            <a href="{{ route('admin.albums.edit', $album) }}"
-               class="bg-indigo-700 text-white px-4 py-2 rounded-lg hover:bg-indigo-800">
-                Edit
-            </a>
+        <!-- Actions -->
+        <div class="mt-4 flex justify-end">
+            <a href="{{ route('admin.albums.edit', $album) }}" class="bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-400 border-2 border-gray-300 px-4 py-2 rounded-xl">Edit</a>
         </div>
-
     </div>
-
-</div>
 </x-app-layout>

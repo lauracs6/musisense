@@ -9,29 +9,33 @@ use Illuminate\Http\Request;
 
 class AlbumController extends Controller
 {
-    // =========================
-    // INDEX + FILTROS
-    // =========================
+    // Index
     public function index(Request $request)
     {
         $query = Album::with(['artists', 'genre']);
 
-        // SEARCH (title o artist)
+        // Search: by title, artist or year
         if ($request->filled('search')) {
             $search = $request->search;
 
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%$search%")
+                ->orWhere('year', 'like', "%$search%")
                   ->orWhereHas('artists', function ($q2) use ($search) {
                       $q2->where('name', 'like', "%$search%");
                   });
             });
         }
 
-        // FILTER STATUS
+        // Filter by status
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
+        
+        // Filter by type
+        if ($request->filled('type')) {
+    $query->where('type', $request->type);
+}
 
         $albums = $query
             ->orderBy('id')
@@ -41,9 +45,8 @@ class AlbumController extends Controller
         return view('admin.albums.index', compact('albums'));
     }
 
-    // =========================
-    // SHOW
-    // =========================
+    
+    // Show
     public function show(Album $album)
     {
         $album->load(['artists', 'genre', 'tracks']);
@@ -51,9 +54,7 @@ class AlbumController extends Controller
         return view('admin.albums.show', compact('album'));
     }
 
-    // =========================
-    // EDIT
-    // =========================
+    // Edit: all
     public function edit(Album $album)
     {
         $genres = Genre::all();
@@ -61,9 +62,7 @@ class AlbumController extends Controller
         return view('admin.albums.edit', compact('album', 'genres'));
     }
 
-    // =========================
-    // UPDATE
-    // =========================
+    // Update
     public function update(Request $request, Album $album)
     {
         $data = $request->validate([
@@ -75,13 +74,21 @@ class AlbumController extends Controller
             'cover' => 'nullable|image|max:2048',
         ]);
 
-        // SUBIR NUEVA COVER
         if ($request->hasFile('cover')) {
             $path = $request->file('cover')->store('covers', 'public');
             $data['cover'] = $path;
         }
 
         $album->update($data);
+
+        // Deactivate/activate tracks if deactivate/activate album
+        if ($data['status'] === 'n') {
+            $album->tracks()->update(['status' => 'n']);
+        }
+
+        if ($data['status'] === 'y') {
+            $album->tracks()->update(['status' => 'y']);
+        }
 
         return redirect()
             ->route('admin.albums.show', $album)

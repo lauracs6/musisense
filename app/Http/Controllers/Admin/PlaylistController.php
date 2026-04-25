@@ -8,12 +8,12 @@ use Illuminate\Http\Request;
 
 class PlaylistController extends Controller
 {
-    // INDEX
+    // Index
     public function index(Request $request)
     {
         $query = Playlist::with('user')->withCount('tracks')->orderBy('id', 'asc');
 
-        // SEARCH (nombre playlist o usuario)
+        // Search: by name or username
         if ($request->filled('search')) {
             $search = $request->search;
 
@@ -25,7 +25,7 @@ class PlaylistController extends Controller
             });
         }
 
-        // STATUS FILTER
+        // Filter by status
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
@@ -38,7 +38,7 @@ class PlaylistController extends Controller
         return view('admin.playlists.index', compact('playlists'));
     }
 
-    // SHOW
+    // Show
     public function show(Playlist $playlist)
     {
         $playlist->load(['user', 'tracks']);
@@ -46,28 +46,53 @@ class PlaylistController extends Controller
         return view('admin.playlists.show', compact('playlist'));
     }
 
-    // EDIT (solo status)
+    // Edit: name, status and track order
     public function edit(Playlist $playlist)
     {
+        $playlist->load(['tracks' => function ($q) {
+            $q->orderBy('playlist_track.position');
+        }]);
+
         return view('admin.playlists.edit', compact('playlist'));
     }
 
-    // UPDATE (solo activar/desactivar)
+    // Update
     public function update(Request $request, Playlist $playlist)
-    {
-        $data = $request->validate([
-            'status' => 'required|in:y,n',
-        ]);
+{
+    $data = $request->validate([
+        'name' => 'required|string|max:255',
+        'status' => 'required|in:y,n',
+        'tracks' => 'array',
+        'tracks.*' => 'exists:tracks,id',
+    ]);
+    
+    $playlist->load('user');
 
-        // si usuario está inactivo, no permitir activar playlist
-        if ($data['status'] === 'y' && $playlist->user->status === 'n') {
-            return back()->with('error', 'Cannot activate playlist of inactive user');
+    // Can't activate track if user is deactivated
+    if ($data['status'] === 'y' && $playlist->user->status === 'n') {
+        return back()
+            ->with('error', "You can't activate a playlist when its user is deactivated. Please activate the user first.")
+            ->withInput();
+    }
+
+    $playlist->update([
+        'name' => $data['name'],
+        'status' => $data['status'],
+    ]);
+
+    // Rracks + order
+    if (isset($data['tracks'])) {
+        $sync = [];
+
+        foreach ($data['tracks'] as $index => $trackId) {
+            $sync[$trackId] = ['position' => $index + 1];
         }
 
-        $playlist->update($data);
-
-        return redirect()
-            ->route('admin.playlists.show', $playlist)
-            ->with('success', 'Playlist updated');
+        $playlist->tracks()->sync($sync);
     }
+
+    return redirect()
+        ->route('admin.playlists.show', $playlist)
+        ->with('success', 'Playlist updated');
+}
 }

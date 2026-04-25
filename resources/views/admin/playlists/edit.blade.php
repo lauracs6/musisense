@@ -1,13 +1,15 @@
 <x-app-layout>
-<div class="min-h-screen p-6 bg-white text-gray-800">
+    <x-slot name="header">
+        Edit Playlist
+    </x-slot>
 
-    <div class="max-w-xl mx-auto border p-6 rounded-2xl shadow hover:shadow-md hover:shadow-indigo-800">
+    <div class="max-w-xl mx-auto bg-white p-6 border-l-4 border-indigo-500 shadow">
 
         <div class="flex justify-between items-center mb-4">
-            <h1 class="text-2xl font-bold">Edit Playlist</h1>
+            <h2 class="text-xl font-semibold">Edit Playlist</h2>
 
             <a href="{{ route('admin.playlists.index') }}"
-               class="bg-indigo-700 text-white px-4 py-2 rounded-lg hover:bg-indigo-800">
+               class="bg-white text-gray-600 hover:bg-gray-100 border-2 border-gray-300 px-4 py-2 rounded-xl">
                 Back
             </a>
         </div>
@@ -16,40 +18,104 @@
             @csrf
             @method('PUT')
 
-            <!-- INFO SOLO LECTURA -->
+            <!-- NAME (editable ahora) -->
             <div class="mb-4">
-                <p><strong>Name:</strong> {{ $playlist->name }}</p>
-                <p><strong>User:</strong> {{ $playlist->user->username }}</p>
+                <label class="block text-sm font-medium">Name</label>
+                <input type="text" name="name"
+                       value="{{ old('name', $playlist->name) }}"
+                       class="w-full border rounded p-2 mt-1">
             </div>
 
             <!-- STATUS -->
             <div class="mb-4">
-                <label class="text-sm">Status</label>
-
+                <label class="block text-sm font-medium">Status</label>
                 <select name="status" class="w-full border rounded p-2 mt-1">
-                    <option value="y" {{ $playlist->status === 'y' ? 'selected' : '' }}>
-                        Active
-                    </option>
-                    <option value="n" {{ $playlist->status === 'n' ? 'selected' : '' }}>
-                        Inactive
-                    </option>
+                    <option value="y" {{ $playlist->status === 'y' ? 'selected' : '' }}>Active</option>
+                    <option value="n" {{ $playlist->status === 'n' ? 'selected' : '' }}>Inactive</option>
                 </select>
             </div>
 
+            <!-- TRACKS DRAG & DROP -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium mb-2">Tracks (drag to reorder)</label>
+
+                <div id="tracks-list" class="space-y-2">
+                    @foreach($playlist->tracks as $track)
+                        <div class="flex items-center justify-between bg-gray-100 p-2 rounded cursor-move"
+                             data-id="{{ $track->id }}">
+
+                            <span class="text-sm">
+                                {{ $track->title }}
+                            </span>
+
+                            <!-- hidden input for submit -->
+                            <input type="hidden" name="tracks[]" value="{{ $track->id }}">
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- ACTIONS -->
             <div class="flex justify-end gap-2">
                 <a href="{{ route('admin.playlists.index') }}"
-                   class="bg-gray-500 text-white px-4 py-2 rounded text-sm">
+                   class="bg-white text-gray-600 border-2 border-gray-300 px-4 py-2 rounded-xl">
                     Cancel
                 </a>
 
-                <button class="bg-indigo-700 text-white px-4 py-2 rounded-lg hover:bg-indigo-800">
+                <button type="submit"
+                        class="bg-indigo-600 text-white px-4 py-2 rounded-xl">
                     Save
                 </button>
             </div>
-
         </form>
+        @if (session('error'))
+                <div id="toast-error"
+                    class="fixed bottom-6 left-1/2 transform -translate-x-1/2
+                            bg-red-600 text-white px-6 py-3 rounded-xl shadow-lg z-50
+                            flex items-center gap-2">
 
+                    <!-- icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="w-5 h-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+
+                    <span class="text-sm font-medium">
+                        {{ session('error') }}
+                    </span>
+                </div>
+
+                <script>
+                    setTimeout(() => {
+                        const el = document.getElementById('toast-error');
+                        if (el) {
+                            el.classList.add('opacity-0', 'transition', 'duration-300');
+                            setTimeout(() => el.remove(), 300);
+                        }
+                    }, 4000);
+                </script>
+            @endif
     </div>
 
-</div>
+    <!-- DRAG & DROP SCRIPT -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+    <script>
+        new Sortable(document.getElementById('tracks-list'), {
+            animation: 150,
+            onEnd: function () {
+                // reordenar inputs hidden según DOM
+                const container = document.getElementById('tracks-list');
+                const items = container.querySelectorAll('[data-id]');
+
+                items.forEach(item => {
+                    container.appendChild(item);
+                });
+            }
+        });
+    </script>
 </x-app-layout>

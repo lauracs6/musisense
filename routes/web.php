@@ -38,6 +38,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // GENRES
     Route::get('/genres', [GenreController::class, 'index'])->name('genres.index');
+    Route::get('/genres/{genre}', [GenreController::class, 'show'])->name('genres.show');
     Route::get('/genres/{genre}/edit', [GenreController::class, 'edit'])->name('genres.edit');
     Route::put('/genres/{genre}', [GenreController::class, 'update'])->name('genres.update');
     Route::patch('/genres/{genre}/toggle', [GenreController::class, 'toggle'])->name('genres.toggle');

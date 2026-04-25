@@ -1,71 +1,47 @@
 <x-app-layout>
-    <div class="min-h-screen p-6 bg-white text-gray-800">
+    <x-slot name="header">
+        Edit Genre
+    </x-slot>
 
-        <div class="max-w-xl mx-auto hover:shadow-md hover:shadow-indigo-800 p-6 rounded-2xl shadow">
+    <div class="max-w-xl mx-auto bg-white p-6 border-l-4 border-indigo-500 shadow">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold">Edit Genre</h2>
 
-            <div class="flex justify-between items-center mb-4">
-                <h1 class="text-xl font-semibold mb-6">
-                    Edit Genre
-                </h1>
-                <a href="{{ route('admin.genres.index') }}"
-                class="bg-gray-500 text-white px-4 py-2 rounded text-sm">
-                    Back
-                </a>
-            </div>
-
-            <form method="POST" action="{{ route('admin.genres.update', $genre) }}">
-                @csrf
-                @method('PUT')
-
-                <!-- Name -->
-                <div class="mb-4">
-                    <label class="block text-sm">
-                        Name
-                    </label>
-                    <input
-                        type="text"
-                        name="name"
-                        value="{{ old('name', $genre->name) }}"
-                        class="w-full border rounded p-2 mt-1"
-                    >
-                </div>
-
-                <!-- Status -->
-                <div class="mb-4">
-                    <label class="block text-sm">
-                        Status
-                    </label>
-                    <select
-                        name="status"
-                        class="w-full border rounded p-2 mt-1"
-                    >
-                        <option value="y" {{ old('status', $genre->status) === 'y' ? 'selected' : '' }}>
-                            Active
-                        </option>
-                        <option value="n" {{ old('status', $genre->status) === 'n' ? 'selected' : '' }}>
-                            Inactive
-                        </option>
-                    </select>
-                </div>
-
-                <!-- Actions -->
-                <div class="flex justify-end space-x-2">
-
-                    <a href="{{ route('admin.genres.index') }}"
-                    class="bg-gray-500 text-white px-4 py-2 rounded text-sm">
-                        Cancel
-                    </a>
-
-                    <button type="submit"
-                        class="bg-indigo-700 text-white px-4 py-2 rounded-lg hover:bg-indigo-800">
-                        Save
-                    </button>
-
-                </div>
-
-            </form>
-
+            <a href="{{ route('admin.genres.index') }}"
+               class="bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-400 border-2 border-gray-300 px-4 py-2 rounded-xl">
+                Back
+            </a>
         </div>
 
+        <form method="POST" action="{{ route('admin.genres.update', $genre) }}">
+            @csrf
+            @method('PUT')
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium">Name</label>
+                <input type="text" name="name"
+                    value="{{ old('name', $genre->name) }}"
+                    class="w-full border rounded p-2 mt-1">
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium">Status</label>
+                <select name="status" class="w-full border rounded p-2 mt-1">
+                    <option value="y" @selected($genre->status=='y')>Active</option>
+                    <option value="n" @selected($genre->status=='n')>Inactive</option>
+                </select>
+            </div>
+
+            <div class="flex justify-end gap-2">
+                <a href="{{ route('admin.genres.index') }}"
+                   class="bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-400 border-2 border-gray-300 px-4 py-2 rounded-xl">
+                    Cancel
+                </a>
+
+                <button class="bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-400 border-2 border-indigo-500 px-4 py-2 rounded-xl">
+                    Save
+                </button>
+            </div>
+        </form>
     </div>
 </x-app-layout>

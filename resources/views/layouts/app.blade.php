@@ -1,67 +1,38 @@
-<body class="font-sans antialiased">
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
-<div class="flex min-h-screen bg-gray-100">
+        <title>{{ config('app.name', 'Laravel') }}</title>
 
-    {{-- SIDEBAR --}}
-    <aside class="w-64 bg-gray-900 text-white flex flex-col">
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        <div class="p-5 text-lg font-bold border-b border-gray-800">
-            Music Admin
-        </div>
+        <!-- Scripts -->
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    </head>
+    <body class="font-sans antialiased">
+        <div class="min-h-screen bg-gray-100">
+            <!-- Sidebar (oscura) -->
+            @include('layouts.sidebar')
 
-        <nav class="flex-1 p-4 space-y-1 text-sm">
+            <!-- Main content -->
+            <div class="ml-64 p-6">
+                <!-- Page Header -->
+                @isset($header)
+                    <header class="mb-6">
+                        <h1 class="text-2xl font-semibold text-gray-800">{{ $header }}</h1>
+                    </header>
+                @endisset
 
-            <a href="{{ route('admin.genres.index') }}"
-               class="block px-3 py-2 rounded hover:bg-gray-800 {{ request()->routeIs('admin.genres.*') ? 'bg-gray-800' : '' }}">
-                Genres
-            </a>
-
-            <a href="{{ route('admin.albums.index') }}"
-               class="block px-3 py-2 rounded hover:bg-gray-800 {{ request()->routeIs('admin.albums.*') ? 'bg-gray-800' : '' }}">
-                Albums
-            </a>
-
-            <a href="{{ route('admin.tracks.index') }}"
-               class="block px-3 py-2 rounded hover:bg-gray-800 {{ request()->routeIs('admin.tracks.*') ? 'bg-gray-800' : '' }}">
-                Tracks
-            </a>
-
-            <a href="{{ route('admin.users.index') }}"
-               class="block px-3 py-2 rounded hover:bg-gray-800 {{ request()->routeIs('admin.users.*') ? 'bg-gray-800' : '' }}">
-                Users
-            </a>
-
-            <a href="{{ route('admin.playlists.index') }}"
-               class="block px-3 py-2 rounded hover:bg-gray-800 {{ request()->routeIs('admin.playlists.*') ? 'bg-gray-800' : '' }}">
-                Playlists
-            </a>
-
-        </nav>
-
-        {{-- USER --}}
-        <div class="p-4 border-t border-gray-800 text-sm">
-
-            <div class="mb-2 text-gray-300">
-                {{ Auth::user()->name }}
+                <!-- Page Content -->
+                <main>
+                    {{ $slot }}
+                </main>
             </div>
-
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-
-                <button class="text-red-400 hover:text-red-300">
-                    Logout
-                </button>
-            </form>
-
         </div>
-
-    </aside>
-
-    {{-- MAIN CONTENT --}}
-    <main class="flex-1 p-6">
-        {{ $slot }}
-    </main>
-
-</div>
-
-</body>
+    </body>
+</html>

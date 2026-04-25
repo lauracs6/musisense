@@ -1,55 +1,57 @@
 <x-app-layout>
-    <div class="min-h-screen p-6 bg-white text-gray-800">
+    <x-slot name="header">
+        User Details
+    </x-slot>
 
-        <h1 class="text-2xl font-bold mb-6">User details</h1>
+    <div class="max-w-3xl mx-auto bg-white p-6 shadow border-l-4 border-indigo-500">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold">
+                User: {{ $user->username }}
+            </h2>
 
-        <div class="border rounded-2xl p-6 hover:shadow-md hover:shadow-indigo-800 flex justify-between items-start">
+            <a href="{{ route('admin.users.index') }}"
+               class="bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-400 border-2 border-gray-300 px-4 py-2 rounded-xl">
+                Back
+            </a>
+        </div>
 
+        <!-- Info -->
+        <dl class="grid grid-cols-1 gap-2 text-sm">
+            <div><dt class="font-semibold inline">ID:</dt> <dd class="inline">{{ $user->id }}</dd></div>
+            <div><dt class="font-semibold inline">Username:</dt> <dd class="inline">{{ $user->username }}</dd></div>
+            <div><dt class="font-semibold inline">Email:</dt> <dd class="inline">{{ $user->email }}</dd></div>
             <div>
-                <h1 class="text-2xl font-bold mb-4">{{ $user->username }}</h1>
-
-                <p><strong>Email:</strong> {{ $user->email }}</p>
-
-                <p class="mt-2">
-                    <strong>Status:</strong>
-                    <span class="{{ $user->status === 'y' ? 'text-green-600' : 'text-red-600' }}">
+                <dt class="font-semibold inline">Status:</dt>
+                <dd class="inline">
+                    <span class="px-2 py-1 rounded-full text-xs {{ $user->status === 'y' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                         {{ $user->status === 'y' ? 'Active' : 'Inactive' }}
                     </span>
-                </p>
+                </dd>
+            </div>
+        </dl>
 
-                </br>
+        <hr class="my-4">
 
-                <!-- PLAYLISTS -->
-                <p class="text-xl font-semibold ">Playlists</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    @foreach($user->playlists as $playlist)
-                        <div class="border p-4 rounded-xl">
-                            <p class="font-semibold">{{ $playlist->name }}</p>
+        <!-- Playlists -->
+        <h3 class="font-semibold mb-2">Playlists</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            @foreach($user->playlists as $playlist)
+                <div class="border p-3 rounded-lg">
+                    <p class="font-semibold">{{ $playlist->name }}</p>
 
-                            <p class="text-sm">
-                                Status:
-                                <span class="{{ $playlist->status === 'y' ? 'text-green-600' : 'text-red-600' }}">
-                                    {{ $playlist->status === 'y' ? 'Active' : 'Inactive' }}
-                                </span>
-                            </p>
-                        </div>
-                    @endforeach
+                    <span class="px-2 py-1 rounded-full text-xs {{ $playlist->status === 'y' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                        {{ $playlist->status === 'y' ? 'Active' : 'Inactive' }}
+                    </span>
                 </div>
-            </div>         
+            @endforeach
+        </div>
 
-            <div class="flex gap-2">
-                <a href="{{ route('admin.users.edit', $user) }}"
-                   class="bg-indigo-700 text-white px-4 py-2 rounded-lg hover:bg-indigo-800">
-                    Edit
-                </a>
-
-                <a href="{{ route('admin.users.index') }}"
-                   class="bg-indigo-700 text-white px-4 py-2 rounded-lg hover:bg-indigo-800">
-                    Back
-                </a>
-            </div> 
-
-        </div>        
-
+        <!-- Actions -->
+        <div class="mt-4 flex justify-end">
+            <a href="{{ route('admin.users.edit', $user) }}"
+               class="bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-400 border-2 border-gray-300 px-4 py-2 rounded-xl">
+                Edit
+            </a>
+        </div>
     </div>
 </x-app-layout>

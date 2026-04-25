@@ -1,45 +1,66 @@
 <x-app-layout>
-<div class="min-h-screen p-6 bg-white text-gray-800">
+    <x-slot name="header">
+        Playlist Details
+    </x-slot>
 
-    <div class="max-w-xl mx-auto border p-6 rounded-2xl shadow hover:shadow-md hover:shadow-indigo-800">
-
+    <div class="max-w-3xl mx-auto bg-white p-6 shadow border-l-4 border-indigo-500">
         <div class="flex justify-between items-center mb-4">
-            <h1 class="text-2xl font-bold">{{ $playlist->name }}</h1>
+            <h2 class="text-xl font-semibold">
+                Playlist: {{ $playlist->name }}
+            </h2>
 
             <a href="{{ route('admin.playlists.index') }}"
-               class="bg-indigo-700 text-white px-4 py-2 rounded-lg hover:bg-indigo-800">
+               class="bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-400 border-2 border-gray-300 px-4 py-2 rounded-xl">
                 Back
             </a>
         </div>
 
-        <p><strong>User:</strong> {{ $playlist->user->username }}</p>
+        <!-- Info -->
+        <dl class="grid grid-cols-1 gap-2 text-sm">
+            <div>
+                <dt class="font-semibold inline">ID:</dt>
+                <dd class="inline">{{ $playlist->id }}</dd>
+            </div>
 
-        <p class="mt-2">
-            Status:
-            <span class="{{ $playlist->status === 'y' ? 'text-green-600' : 'text-red-600' }}">
-                {{ $playlist->status === 'y' ? 'Active' : 'Inactive' }}
-            </span>
-        </p>
+            <div>
+                <dt class="font-semibold inline">Name:</dt>
+                <dd class="inline">{{ $playlist->name }}</dd>
+            </div>
 
-        <div class="mt-4">
-            <h2 class="font-semibold mb-2">Tracks</h2>
+            <div>
+                <dt class="font-semibold inline">User:</dt>
+                <dd class="inline">{{ $playlist->user->username ?? 'Unknown' }}</dd>
+            </div>
 
+            <div>
+                <dt class="font-semibold inline">Status:</dt>
+                <dd class="inline">
+                    <span class="px-2 py-1 rounded-full text-xs {{ $playlist->status === 'y' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                        {{ $playlist->status === 'y' ? 'Active' : 'Inactive' }}
+                    </span>
+                </dd>
+            </div>
+        </dl>
+
+        <hr class="my-4">
+
+        <!-- Tracks -->
+        <h3 class="font-semibold mb-2">Tracks</h3>
+        <ul class="divide-y divide-gray-200">
             @foreach($playlist->tracks->sortBy('pivot.position') as $track)
-                <p class="text-sm text-gray-600">
+                <li class="py-2 text-sm">
                     {{ $track->pivot->position }}.
                     {{ $track->title }} - {{ $track->artist }}
-                </p>
+                </li>
             @endforeach
-        </div>
+        </ul>
 
-        <div class="mt-6 flex justify-end">
+        <!-- Actions -->
+        <div class="mt-4 flex justify-end">
             <a href="{{ route('admin.playlists.edit', $playlist) }}"
-               class="bg-indigo-700 text-white px-4 py-2 rounded-lg hover:bg-indigo-800">
+               class="bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-400 border-2 border-gray-300 px-4 py-2 rounded-xl">
                 Edit
             </a>
         </div>
-
     </div>
-
-</div>
 </x-app-layout>
