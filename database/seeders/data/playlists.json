@@ -1,16 +1,16 @@
 {
     "playlists": [
-        { "id": 1, "name": "Metalcoret", "user_id": 1 },
-        { "id": 2, "name": "Workout Mix", "user_id": 2 },
-        { "id": 3, "name": "Late Night", "user_id": 3 },
-        { "id": 4, "name": "Rock Energy", "user_id": 4 },
-        { "id": 5, "name": "Focus Mode", "user_id": 5 },
-        { "id": 6, "name": "Soft Pop", "user_id": 6 },
-        { "id": 7, "name": "Indie Mix", "user_id": 7 },
-        { "id": 8, "name": "Daily Mix", "user_id": 8 },
-        { "id": 9, "name": "Electronic Flow", "user_id": 9 },
-        { "id": 10, "name": "Morning Boost", "user_id": 10 },
-        { "id": 11, "name": "Classic Hits", "user_id": 11 },
-        { "id": 12, "name": "Random Picks", "user_id": 12 }
+        { "id": 1, "name": "Metalcoret", "user_id": 1, "description": "A collection of the best metalcore tracks." },
+        { "id": 2, "name": "Workout Mix", "user_id": 2, "description": "High-energy songs to keep you motivated during workouts." },
+        { "id": 3, "name": "Late Night", "user_id": 3, "description": "Chill tracks for late-night listening." },
+        { "id": 4, "name": "Rock Energy", "user_id": 4, "description": "Energetic rock songs to keep you pumped." },
+        { "id": 5, "name": "Focus Mode", "user_id": 5, "description": "Songs to help you concentrate and stay productive." },
+        { "id": 6, "name": "Soft Pop", "user_id": 6, "description": "Smooth and relaxing pop tunes." },
+        { "id": 7, "name": "Indie Mix", "user_id": 7, "description": "A mix of the best indie tracks." },
+        { "id": 8, "name": "Daily Mix", "user_id": 8, "description": "A mix of songs tailored for your daily listening." },
+        { "id": 9, "name": "Electronic Flow", "user_id": 9, "description": "Electronic tracks to keep you in the flow." },
+        { "id": 10, "name": "Morning Boost", "user_id": 10, "description": "Songs to kickstart your morning with energy." },
+        { "id": 11, "name": "Classic Hits", "user_id": 11, "description": "Timeless classic hits from various genres." },
+        { "id": 12, "name": "Random Picks", "user_id": 12, "description": "A random selection of tracks for a surprise mix." }
     ]
 }

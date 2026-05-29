@@ -15,10 +15,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([
-        UserSeeder::class,   
-        PlaylistSeeder::class,     
-        PlaylistTrackSeeder::class, 
+        $this->call(UserSeeder::class);
+
+        $this->command->call('music:import', [
+            'folder' => 'C:\Users\Laura\Music'
         ]);
+
+        $this->call(PlaylistSeeder::class);
+        $this->call(PlaylistTrackSeeder::class);
     }
 }

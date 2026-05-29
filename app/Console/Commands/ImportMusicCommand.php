@@ -124,7 +124,6 @@ class ImportMusicCommand extends Command
             [
                 'year' => $tags['year'] ?? null,
                 'type' => $this->normalizeAlbumType($tags['releasetype'] ?? 'album'),
-                'country' => $tags['country'] ?? null,
             ]
         );
 

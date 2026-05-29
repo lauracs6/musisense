@@ -14,12 +14,13 @@ class TrackResource extends JsonResource
             'title' => $this->title,
             'artist' => $this->artist,
             'track_number' => $this->track_number,
-            'duration' => $this->duration,
+            'duration' => $this->duration,            
+            'file_url' => route('tracks.stream', ['track' => $this->id]),
 
             'album' => [
                 'id' => $this->album->id,
                 'title' => $this->album->title,
-                'cover' => $this->album->cover,
+                'cover' => $this->album->cover ? asset('storage/' . $this->album->cover) : null,
             ],
         ];
     }
