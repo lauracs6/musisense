@@ -10,31 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class PlaylistController extends Controller
 {
-    /**
-     * Llena una playlist con 10 canciones aleatorias de forma permanente si está vacía.
-     */
-    private function autoPopulateIfEmpty(Playlist $playlist)
-    {
-        if ($playlist->tracks()->exists()) {
-            return;
-        }
-
-        $randomTrackIds = Track::inRandomOrder()->take(10)->pluck('id')->toArray();
-
-        if (!empty($randomTrackIds)) {
-            $syncData = [];
-            foreach ($randomTrackIds as $index => $trackId) {
-                // Cada track ID tiene su propia posición secuencial (1, 2, 3...)
-                $syncData[$trackId] = ['position' => $index + 1];
-            }
-
-            // sync() procesa el array asociativo manteniendo los datos individuales del pivote
-            $playlist->tracks()->sync($syncData);
-        }
-    }
-
-
-    // GET /api/playlists (Only current user playlists)
+    // GET /api/playlists (Muestra solo las playlists del usuario autenticado)
     public function index()
     {
         $user = Auth::user();
@@ -42,16 +18,12 @@ class PlaylistController extends Controller
         $playlists = $user->playlists()
             ->get()
             ->map(function ($playlist) use ($user) {
-
-                // Si por algún motivo quedó en 0 en la BD, la rellenamos al listar
-                $this->autoPopulateIfEmpty($playlist);
-
                 return [
                     'id' => $playlist->id,
                     'name' => $playlist->name,
                     'user' => $user->username ?? $user->name,
                     'description' => $playlist->description,
-                    'tracks_count' => $playlist->tracks()->count(), // Conteo real directo de base de datos
+                    'tracks_count' => $playlist->tracks()->count(), // Conteo real físico en la BD
                 ];
             });
 
@@ -60,12 +32,9 @@ class PlaylistController extends Controller
         ]);
     }
 
-    // GET /api/playlists/{id}
+    // GET /api/playlists/{id} (Detalle de una playlist específica)
     public function show(Playlist $playlist)
     {
-        // Aseguramos que tenga canciones antes de cargar relaciones
-        $this->autoPopulateIfEmpty($playlist);
-
         $playlist->load(['user', 'tracks.album']);
 
         $tracks = $playlist->tracks
@@ -93,7 +62,7 @@ class PlaylistController extends Controller
         ]);
     }
 
-    // POST /api/playlists (Create)
+    // POST /api/playlists (Crear una nueva playlist desde el Front)
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -107,19 +76,16 @@ class PlaylistController extends Controller
             'status' => 'y',
         ]);
 
-        // Rellenamos inmediatamente la playlist con 10 canciones al ser creada
-        $this->autoPopulateIfEmpty($playlist);
-
         return response()->json([
             'data' => [
                 'id' => $playlist->id,
                 'name' => $playlist->name,
-                'tracks_count' => 10
+                'tracks_count' => 0 // 🚀 AQUÍ ESTÁ EL CAMBIO: Nace completamente vacía con 0 temas
             ]
         ], 201);
     }
 
-    // POST /api/playlists/{playlist}/tracks (Add song)
+    // POST /api/playlists/{playlist}/tracks (Añadir canción manual)
     public function addTrack(Request $request, Playlist $playlist)
     {
         if ($playlist->user_id !== Auth::id()) {
@@ -139,7 +105,7 @@ class PlaylistController extends Controller
         return response()->json(['message' => 'Track added to playlist']);
     }
 
-    // DELETE /api/playlists/{playlist}/tracks/{track} (Remove song)
+    // DELETE /api/playlists/{playlist}/tracks/{track} (Eliminar canción manual)
     public function removeTrack(Playlist $playlist, Track $track)
     {
         if ($playlist->user_id !== Auth::id()) {
@@ -158,7 +124,7 @@ class PlaylistController extends Controller
         }
     }
 
-    // PUT /api/playlists/{playlist}
+    // PUT /api/playlists/{playlist} (Editar datos)
     public function update(Request $request, Playlist $playlist)
     {
         if ($playlist->user_id !== Auth::id()) {
@@ -178,7 +144,7 @@ class PlaylistController extends Controller
         ]);
     }
 
-    // POST /api/playlists/{playlist}/reorder
+    // POST /api/playlists/{playlist}/reorder (Reordenar canciones por Drag & Drop)
     public function reorderTracks(Request $request, Playlist $playlist)
     {
         if ($playlist->user_id !== Auth::id()) return response()->json(['message' => 'Unauthorized'], 403);
@@ -192,7 +158,7 @@ class PlaylistController extends Controller
         return response()->json(['message' => 'Order updated successfully']);
     }
 
-    // DELETE /api/playlists/{playlist}
+    // DELETE /api/playlists/{playlist} (Borrar Playlist)
     public function destroy(Playlist $playlist)
     {
         if ($playlist->user_id !== Auth::id()) {
