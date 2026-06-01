@@ -35,19 +35,31 @@ class PlaylistController extends Controller
     // GET /api/playlists/{id} (Detalle de una playlist específica)
     public function show(Playlist $playlist)
     {
-        $playlist->load(['user', 'tracks.album']);
+        $playlist->load(['user', 'tracks.album.artists']); // Cargar álbumes con sus artistas
 
         $tracks = $playlist->tracks
             ->sortBy('pivot.position')
             ->values()
             ->map(function ($track, $index) {
+                // Obtener artista principal del álbum
+                $mainArtist = $track->album?->artists->first(function ($artist) {
+                    return optional($artist->pivot)->role === 'main';
+                });
+
                 return [
                     'id' => $track->id,
                     'title' => $track->title,
                     'artist' => $track->artist,
                     'duration' => (int) $track->duration,
                     'position' => $track->pivot->position ?? ($index + 1),
-                    'album' => $track->album
+                    'status' => $track->status, // estado de la canción
+                    'album' => $track->album ? [
+                        'id' => $track->album->id,
+                        'title' => $track->album->title,
+                        'cover' => $track->album->cover ? asset('storage/' . $track->album->cover) : null,
+                        'status' => $track->album->status, // ← estado del álbum
+                        'artist_active' => $mainArtist ? (bool) $mainArtist->active : null, // ← estado del artista
+                    ] : null,
                 ];
             });
 

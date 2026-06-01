@@ -13,7 +13,9 @@ class TrackController extends Controller
      */
     public function index()
     {
-        $tracks = Track::with('album')->orderBy('track_number')->get();
+        $tracks = Track::with(['album', 'album.artists'])
+            ->orderBy('track_number')
+            ->get();
 
         return TrackResource::collection($tracks);
     }
@@ -23,7 +25,7 @@ class TrackController extends Controller
      */
     public function show(Track $track)
     {
-        $track->load('album');
+        $track->load(['album', 'album.artists']);
 
         return new TrackResource($track);
     }

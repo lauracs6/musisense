@@ -11,10 +11,14 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">                    
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
 
                     <x-nav-link :href="route('admin.genres.index')" :active="request()->routeIs('admin.genres.*')" class="text-indigo-800 font-semibold hover:text-indigo-400">
                         {{ __('Genres') }}
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('admin.artists.index')" :active="request()->routeIs('admin.artists.*')" class="text-indigo-800 font-semibold hover:text-indigo-400">
+                        {{ __('Artists') }}
                     </x-nav-link>
 
                     <x-nav-link :href="route('admin.albums.index')" :active="request()->routeIs('admin.albums.*')" class="text-indigo-800 font-semibold hover:text-indigo-400">
@@ -33,7 +37,7 @@
                         {{ __('Playlists') }}
                     </x-nav-link>
                 </div>
-                
+
             </div>
 
             <!-- Settings Dropdown -->

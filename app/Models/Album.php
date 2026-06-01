@@ -10,7 +10,7 @@ class Album extends Model
         'title', 'year', 'cover', 'type', 'status', 'genre_id'
     ];
 
-    // Relación muchos a muchos con Artist (esto está bien)
+    // Relación muchos a muchos con Artist
     public function artists()
     {
         return $this->belongsToMany(Artist::class, 'album_artist')
@@ -24,7 +24,7 @@ class Album extends Model
         return $this->artists()->wherePivot('role', 'main')->first();
     }
 
-    // 🔹 Relación correcta con Genre
+    // Relación correcta con Genre
     public function genre()
     {
         return $this->belongsTo(Genre::class);

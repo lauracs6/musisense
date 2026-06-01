@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PlaylistController;
 use App\Http\Controllers\Admin\GenreController;
+use App\Http\Controllers\Admin\ArtistController;
 use App\Http\Controllers\Admin\AlbumController;
 use App\Http\Controllers\Admin\TrackController;
 
@@ -42,6 +43,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/genres/{genre}/edit', [GenreController::class, 'edit'])->name('genres.edit');
     Route::put('/genres/{genre}', [GenreController::class, 'update'])->name('genres.update');
     Route::patch('/genres/{genre}/toggle', [GenreController::class, 'toggle'])->name('genres.toggle');
+
+    // ARTISTS
+    Route::get('/artists', [ArtistController::class, 'index'])->name('artists.index');
+    Route::get('/artists/{artist}', [ArtistController::class, 'show'])->name('artists.show');
+    Route::get('/artists/{artist}/edit', [ArtistController::class, 'edit'])->name('artists.edit');
+    Route::put('/artists/{artist}', [ArtistController::class, 'update'])->name('artists.update');
+    Route::patch('/artists/{artist}/toggle', [ArtistController::class, 'toggle'])->name('artists.toggle');
 
     // ALBUMS
     Route::get('/albums', [AlbumController::class, 'index'])->name('albums.index');

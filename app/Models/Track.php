@@ -18,14 +18,12 @@ class Track extends Model
         'track_number',
         'duration',
         'status',
-        'popularity',
         'file_path',
     ];
 
     protected $casts = [
         'track_number' => 'integer',
         'duration' => 'integer',
-        'popularity' => 'integer',
         'album_id' => 'integer',
         'file_path' => 'string',
     ];

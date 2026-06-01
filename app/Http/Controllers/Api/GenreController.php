@@ -16,15 +16,14 @@ class GenreController extends Controller
         $genres = Genre::with(['albums' => function ($query) {
                 $query->orderBy('title');
             }])
-            ->where('status', 'y')
             ->orderBy('name')
-            ->get();
+            ->get(); // <- Eliminado el filtro where('status', 'y')
 
         return response()->json($genres);
     }
 
     /**
-     * Mostrar un género concreto con sus álbumes y artistas correspondientes
+     * Mostrar un género concreto solo si está activo
      */
     public function show(Genre $genre): JsonResponse
     {
@@ -34,7 +33,6 @@ class GenreController extends Controller
             ], 404);
         }
 
-        // Cargamos los álbumes ordenados Y sus respectivos artistas anidados
         $genre->load([
             'albums' => function ($query) {
                 $query->orderBy('title');

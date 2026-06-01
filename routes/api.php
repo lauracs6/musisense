@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\GenreController;
+use App\Http\Controllers\Api\ArtistController;
 use App\Http\Controllers\Api\AlbumController;
 use App\Http\Controllers\Api\TrackController;
 use App\Http\Controllers\Api\PlaylistController;
@@ -22,25 +23,28 @@ use App\Http\Resources\UserResource;
 |--------------------------------------------------------------------------
 */
 
-// --- PUBLIC ROUTES ---
+// --- PUBLIC ROUTES (solo login y registro) ---
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
-Route::get('/genres', [GenreController::class, 'index']);
-Route::get('/genres/{genre}', [GenreController::class, 'show']);
-Route::get('/albums', [AlbumController::class, 'index']);
-Route::get('/albums/{album}', [AlbumController::class, 'show']);
-Route::get('/tracks', [TrackController::class, 'index']);
-Route::get('/tracks/{track}', [TrackController::class, 'show']);
-Route::get('/search', SearchController::class);
+// --- PROTECTED ROUTES (Requiere autenticación y usuario activo) ---
+Route::middleware(['auth:sanctum', 'active'])->group(function () {
 
-// Streaming route
-Route::get('/tracks/{track}/stream', [TrackStreamController::class, 'stream'])->name('tracks.stream');
+    // Contenido principal
+    Route::get('/genres', [GenreController::class, 'index']);
+    Route::get('/genres/{genre}', [GenreController::class, 'show']);
+    Route::get('/artists', [ArtistController::class, 'index']);
+    Route::get('/artists/{artist}', [ArtistController::class, 'show']);
+    Route::get('/albums', [AlbumController::class, 'index']);
+    Route::get('/albums/{album}', [AlbumController::class, 'show']);
+    Route::get('/tracks', [TrackController::class, 'index']);
+    Route::get('/tracks/{track}', [TrackController::class, 'show']);
+    Route::get('/search', SearchController::class);
 
-// --- PROTECTED ROUTES (Requires Login/Token) ---
-Route::middleware(['auth:sanctum'])->group(function () {
+    // Streaming (también protegido)
+    Route::get('/tracks/{track}/stream', [TrackStreamController::class, 'stream'])->name('tracks.stream');
 
-    // Playlist Routes (Now Protected)
+    // Playlist Routes
     Route::get('/playlists', [PlaylistController::class, 'index']);
     Route::post('/playlists', [PlaylistController::class, 'store']);
     Route::get('/playlists/{playlist}', [PlaylistController::class, 'show']);
@@ -54,15 +58,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/user', function (Request $request) {
         return new UserResource($request->user()->load('role'));
     });
-
     Route::put('/user', function (UserUpdateRequest $request) {
         return app(UserController::class)->update($request, $request->user());
     });
-
     Route::delete('/user', function (UserDestroyRequest $request) {
         return app(UserController::class)->destroy($request, $request->user());
     });
-
     Route::put('/user/password', function (UserPasswordUpdateRequest $request) {
         return app(UserController::class)->updatePassword($request);
     });
