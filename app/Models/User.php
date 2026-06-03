@@ -64,11 +64,6 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Playlist::class);
     }
 
-    public function listeningHistory()
-    {
-        return $this->hasMany(ListeningHistory::class);
-    }
-
     /**
      * Helpers
      */
