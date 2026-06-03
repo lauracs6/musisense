@@ -35,41 +35,33 @@ class PlaylistController extends Controller
     // GET /api/playlists/{id} (Detalle de una playlist específica)
     public function show(Playlist $playlist)
     {
-        $playlist->load(['user', 'tracks.album.artists']); // Cargar álbumes con sus artistas
-
-        $tracks = $playlist->tracks
-            ->sortBy('pivot.position')
-            ->values()
-            ->map(function ($track, $index) {
-                // Obtener artista principal del álbum
-                $mainArtist = $track->album?->artists->first(function ($artist) {
-                    return optional($artist->pivot)->role === 'main';
-                });
-
-                return [
-                    'id' => $track->id,
-                    'title' => $track->title,
-                    'artist' => $track->artist,
-                    'duration' => (int) $track->duration,
-                    'position' => $track->pivot->position ?? ($index + 1),
-                    'status' => $track->status, // estado de la canción
-                    'album' => $track->album ? [
-                        'id' => $track->album->id,
-                        'title' => $track->album->title,
-                        'cover' => $track->album->cover ? asset('storage/' . $track->album->cover) : null,
-                        'status' => $track->album->status, // ← estado del álbum
-                        'artist_active' => $mainArtist ? (bool) $mainArtist->active : null, // ← estado del artista
-                    ] : null,
-                ];
-            });
+        $playlist->load(['user', 'tracks' => function ($q) {
+            $q->orderBy('playlist_track.position');
+        }]);
 
         return response()->json([
             'data' => [
                 'id' => $playlist->id,
                 'name' => $playlist->name,
-                'user' => $playlist->user->username ?? $playlist->user->name,
                 'description' => $playlist->description,
-                'tracks' => $tracks,
+                'status' => $playlist->status,
+                'user' => $playlist->user->username, // ← cambio aquí
+                'tracks' => $playlist->tracks->map(function ($track) {
+                    return [
+                        'id' => $track->id,
+                        'title' => $track->title,
+                        'artist' => $track->artist,
+                        'duration' => $track->duration,
+                        'status' => $track->status,
+                        'album' => [
+                            'id' => $track->album->id ?? null,
+                            'title' => $track->album->title ?? null,
+                            'cover' => $track->album->cover ? asset('storage/' . $track->album->cover) : null,
+                            'status' => $track->album->status ?? null,
+                            'artist_active' => optional($track->album->mainArtist())->active ?? false,
+                        ],
+                    ];
+                }),
             ]
         ]);
     }
@@ -88,11 +80,14 @@ class PlaylistController extends Controller
             'status' => 'y',
         ]);
 
+        $playlist->load('user');
+
         return response()->json([
             'data' => [
                 'id' => $playlist->id,
                 'name' => $playlist->name,
-                'tracks_count' => 0 // 🚀 AQUÍ ESTÁ EL CAMBIO: Nace completamente vacía con 0 temas
+                'user' => $playlist->user->username, // también aquí
+                'tracks_count' => 0,
             ]
         ], 201);
     }

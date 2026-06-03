@@ -18,7 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'api.key' => EnsureApiKeyIsValid::class,
             'admin' => CheckRoleAdmin::class,
-            'active' => EnsureUserIsActive::class, // ← alias agregado aquí
+            'active' => EnsureUserIsActive::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

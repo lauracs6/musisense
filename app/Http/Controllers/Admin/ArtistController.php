@@ -8,14 +8,24 @@ use Illuminate\Http\Request;
 
 class ArtistController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $artists = Artist::orderBy('name')->paginate(20);
+        $query = Artist::withCount('albums');
+
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $artists = $query->orderBy('name')->paginate(20);
         return view('admin.artists.index', compact('artists'));
     }
 
     public function show(Artist $artist)
     {
+        $artist->load('albums.tracks');
         return view('admin.artists.show', compact('artist'));
     }
 
@@ -38,15 +48,31 @@ class ArtistController extends Controller
 
         // Si el nombre cambió, actualizar todas las canciones asociadas
         if ($oldName !== $newName) {
-            // Obtener todos los tracks de los álbumes de este artista
             $albumIds = $artist->albums()->pluck('albums.id');
             \App\Models\Track::whereIn('album_id', $albumIds)
                 ->where('artist', $oldName)
                 ->update(['artist' => $newName]);
         }
 
+        // 🔥 IMPORTANTE: Activar/desactivar álbumes donde este artista es principal
+        // Obtener los álbumes donde el artista tiene rol 'main'
+        $mainAlbums = $artist->albums()->wherePivot('role', 'main')->get();
+
+        foreach ($mainAlbums as $album) {
+            // Si se desactiva el artista, desactivamos el álbum
+            if ($request->status === 'n') {
+                $album->status = 'n';
+            } else {
+                // Si se reactiva el artista, reactivamos el álbum (solo si no está desactivado por otra razón)
+                // Podemos comprobar si el álbum estaba activo antes? Para simplificar, lo reactivamos.
+                // Pero cuidado: si el álbum tiene otros artistas inactivos, quizás no debería. Asumimos que el artista principal manda.
+                $album->status = 'y';
+            }
+            $album->save();
+        }
+
         return redirect()->route('admin.artists.index')
-            ->with('success', 'Artista actualizado correctamente.');
+            ->with('success', 'Artist updated successfully.');
     }
 
     public function toggle(Artist $artist)

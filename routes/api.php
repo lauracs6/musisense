@@ -26,6 +26,7 @@ use App\Http\Resources\UserResource;
 // --- PUBLIC ROUTES (solo login y registro) ---
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
+Route::get('/tracks/{track}/stream', [TrackStreamController::class, 'stream'])->name('tracks.stream');
 
 // --- PROTECTED ROUTES (Requiere autenticación y usuario activo) ---
 Route::middleware(['auth:sanctum', 'active'])->group(function () {
@@ -41,8 +42,6 @@ Route::middleware(['auth:sanctum', 'active'])->group(function () {
     Route::get('/tracks/{track}', [TrackController::class, 'show']);
     Route::get('/search', SearchController::class);
 
-    // Streaming (también protegido)
-    Route::get('/tracks/{track}/stream', [TrackStreamController::class, 'stream'])->name('tracks.stream');
 
     // Playlist Routes
     Route::get('/playlists', [PlaylistController::class, 'index']);

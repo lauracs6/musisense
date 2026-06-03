@@ -13,10 +13,8 @@ class PlaylistController extends Controller
     {
         $query = Playlist::with('user')->withCount('tracks')->orderBy('id', 'asc');
 
-        // Search: by name or username
         if ($request->filled('search')) {
             $search = $request->search;
-
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%$search%")
                   ->orWhereHas('user', function ($q2) use ($search) {
@@ -25,16 +23,11 @@ class PlaylistController extends Controller
             });
         }
 
-        // Filter by status
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        $playlists = $query
-            ->orderBy('user_id')
-            ->paginate(9)
-            ->withQueryString();
-
+        $playlists = $query->orderBy('user_id')->paginate(9)->withQueryString();
         return view('admin.playlists.index', compact('playlists'));
     }
 
@@ -42,57 +35,46 @@ class PlaylistController extends Controller
     public function show(Playlist $playlist)
     {
         $playlist->load(['user', 'tracks']);
-
         return view('admin.playlists.show', compact('playlist'));
     }
 
-    // Edit: name, status and track order
+    // Edit: only name and status (no track order)
     public function edit(Playlist $playlist)
     {
+        // Cargamos las canciones con su posición actual, solo para mostrarlas (sin interfaz de orden)
         $playlist->load(['tracks' => function ($q) {
             $q->orderBy('playlist_track.position');
         }]);
-
         return view('admin.playlists.edit', compact('playlist'));
     }
 
-    // Update
+    // Update: solo nombre y estado (sin gestión de orden de canciones)
     public function update(Request $request, Playlist $playlist)
-{
-    $data = $request->validate([
-        'name' => 'required|string|max:255',
-        'status' => 'required|in:y,n',
-        'tracks' => 'array',
-        'tracks.*' => 'exists:tracks,id',
-    ]);
-    
-    $playlist->load('user');
+    {
+        $data = $request->validate([
+            'name'   => 'required|string|max:255',
+            'status' => 'required|in:y,n',
+        ]);
 
-    // Can't activate track if user is deactivated
-    if ($data['status'] === 'y' && $playlist->user->status === 'n') {
-        return back()
-            ->with('error', "You can't activate a playlist when its user is deactivated. Please activate the user first.")
-            ->withInput();
-    }
+        $playlist->load('user');
 
-    $playlist->update([
-        'name' => $data['name'],
-        'status' => $data['status'],
-    ]);
-
-    // Rracks + order
-    if (isset($data['tracks'])) {
-        $sync = [];
-
-        foreach ($data['tracks'] as $index => $trackId) {
-            $sync[$trackId] = ['position' => $index + 1];
+        // No se puede activar una playlist si su usuario está desactivado
+        if ($data['status'] === 'y' && $playlist->user->status === 'n') {
+            return back()
+                ->with('error', "You can't activate a playlist when its user is deactivated. Please activate the user first.")
+                ->withInput();
         }
 
-        $playlist->tracks()->sync($sync);
-    }
+        $playlist->update([
+            'name'   => $data['name'],
+            'status' => $data['status'],
+        ]);
 
-    return redirect()
-        ->route('admin.playlists.show', $playlist)
-        ->with('success', 'Playlist updated');
-}
+        // 🔥 Eliminada la sincronización de tracks y orden (drag order)
+        // El orden solo lo maneja el frontend del usuario mediante la API correspondiente.
+
+        return redirect()
+            ->route('admin.playlists.show', $playlist)
+            ->with('success', 'Playlist updated successfully.');
+    }
 }

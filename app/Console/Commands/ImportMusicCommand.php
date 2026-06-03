@@ -156,16 +156,48 @@ class ImportMusicCommand extends Command
         // --------------------
         // TRACK
         // --------------------
+        // Intentar extraer número del nombre del archivo si no hay tag
+        $trackNumber = $tags['track_number'] ?? 0;
+        if ($trackNumber == 0) {
+            $filename = pathinfo($filePath, PATHINFO_FILENAME);
+            if (preg_match('/^(\d+)/', $filename, $matches)) {
+                $trackNumber = (int) $matches[1];
+            }
+        }
+
         Track::updateOrCreate(
             ['file_path' => realpath($filePath)],
             [
                 'title' => $tags['title'],
                 'artist' => $tags['artist'],
                 'album_id' => $album->id,
-                'track_number' => $tags['track_number'] ?? 0,
+                'track_number' => $trackNumber,
                 'duration' => (int)($info['playtime_seconds'] ?? 0),
             ]
         );
+
+        // ✅ REORDENAR TODOS LOS TRACKS DEL ÁLBUM (números consecutivos 1..N)
+        $this->reorderTracks($album->id);
+    }
+
+    /**
+     * Reordena los números de pista de un álbum para que sean consecutivos empezando en 1.
+     */
+    private function reorderTracks(int $albumId): void
+    {
+        $tracks = Track::where('album_id', $albumId)
+            ->orderBy('track_number')
+            ->orderBy('id')
+            ->get();
+
+        $i = 1;
+        foreach ($tracks as $track) {
+            if ($track->track_number != $i) {
+                $track->track_number = $i;
+                $track->save();
+            }
+            $i++;
+        }
     }
 
     // =========================================================
@@ -211,13 +243,12 @@ class ImportMusicCommand extends Command
 
         foreach ($map as $field => $keys) {
             foreach ($keys as $key) {
-
                 if (!empty($tagSources[$key][0])) {
-
                     $value = $tagSources[$key][0];
 
                     if ($field === 'track_number') {
-                        $tags[$field] = (int) explode('/', $value)[0];
+                        $parts = explode('/', $value);
+                        $tags[$field] = (int) trim($parts[0]);
                         break;
                     }
 

@@ -23,7 +23,7 @@
                 <input type="text" name="title"
                     value="{{ old('title', $track->title) }}"
                     class="w-full border rounded p-2 mt-1">
-            </div>    
+            </div>
 
             <!-- Status -->
             <div class="mb-4">
@@ -43,7 +43,7 @@
                 <button class="bg-indigo-700 text-white px-4 py-2 rounded-lg hover:bg-indigo-800">
                     Save
                 </button>
-            </div>            
+            </div>
         </form>
         @if (session('error'))
             <div id="toast-error"
