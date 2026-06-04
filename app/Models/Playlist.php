@@ -22,7 +22,7 @@ class Playlist extends Model
     public function tracks()
     {
         return $this->belongsToMany(Track::class)
-            ->withPivot('position') 
+            ->withPivot('position')
             ->withTimestamps();
     }
 }

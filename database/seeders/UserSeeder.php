@@ -13,11 +13,9 @@ class UserSeeder extends Seeder
 {
     public function run()
     {
-        // 1. Crear roles si no existen
         $adminRole = Role::firstOrCreate(['name' => 'admin']);
         $customerRole = Role::firstOrCreate(['name' => 'customer']);
 
-        // 2. Cargar usuarios desde JSON (todos con rol customer)
         $jsonPath = database_path('seeders/data/users.json');
         if (File::exists($jsonPath)) {
             $json = File::get($jsonPath);
@@ -39,7 +37,6 @@ class UserSeeder extends Seeder
             }
         }
 
-        // 3. Crear usuario administrador (si no existe)
         User::updateOrCreate(
             ['email' => 'admin@musisense.com'],
             [

@@ -55,11 +55,11 @@ class TrackController extends Controller
     // Edit: name or status
     public function edit(Track $track)
     {
-        $albums = Album::all(); // opcional si quieres mostrarlo como readonly
+        $albums = Album::all();
 
         return view('admin.tracks.edit', compact('track', 'albums'));
     }
-    
+
     // Update
     public function update(Request $request, Track $track)
     {

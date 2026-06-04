@@ -14,27 +14,21 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    /**
-     * List of users (admin only).
-     */
+    // Index de usuarios, con paginación y ordenados por ID
     public function index()
     {
         $users = User::with('role')->orderBy('id')->get();
         return UserResource::collection($users);
     }
 
-    /**
-     * Show a specific user.
-     */
+    // Show de un usuario específico, cargando su rol
     public function show(User $user): UserResource
     {
         $user->load('role');
         return new UserResource($user);
     }
 
-    /**
-     * Update a user.
-     */
+    // Actualizar un usuario, validando los datos y normalizando el email
     public function update(UserUpdateRequest $request, User $user): UserResource
     {
         $data = $request->validated();
@@ -51,9 +45,7 @@ class UserController extends Controller
         return new UserResource($user->fresh()->load('role'));
     }
 
-    /**
-     * Deactivate a user (soft delete with status='n').
-     */
+    // Eliminar un usuario, desactivándolo y eliminando sus tokens en una transacción
     public function destroy(UserDestroyRequest $request, User $user): JsonResponse
     {
         DB::transaction(function () use ($user) {
@@ -64,9 +56,7 @@ class UserController extends Controller
         return response()->json(['message' => 'User deactivated']);
     }
 
-    /**
-     * Update the authenticated user's password.
-     */
+    // Actualizar la contraseña de un usuario, validando la nueva contraseña y hasheándola
     public function updatePassword(UserPasswordUpdateRequest $request): JsonResponse
     {
         $request->user()->update([

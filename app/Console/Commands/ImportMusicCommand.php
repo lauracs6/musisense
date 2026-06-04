@@ -58,9 +58,7 @@ class ImportMusicCommand extends Command
         return 0;
     }
 
-    // =========================================================
-    // FILE SCAN
-    // =========================================================
+    // FILE SCAN //
     private function getAudioFiles(string $folder): array
     {
         $extensions = ['mp3', 'flac', 'm4a', 'ogg'];
@@ -75,9 +73,7 @@ class ImportMusicCommand extends Command
         return $files;
     }
 
-    // =========================================================
-    // IMPORT CORE
-    // =========================================================
+    // IMPORT CORE //
     private function importFile(getID3 $getID3, string $filePath)
     {
         $info = $getID3->analyze($filePath);
@@ -86,7 +82,7 @@ class ImportMusicCommand extends Command
         // defaults seguros
         $tags['title'] ??= pathinfo($filePath, PATHINFO_FILENAME);
 
-        // 🔥 PRIORIDAD CORRECTA DE ARTISTA
+        // Prioridad artista
         $tags['artist'] =
             $tags['artist']
             ?? $tags['album_artist']
@@ -94,16 +90,12 @@ class ImportMusicCommand extends Command
 
         $tags['album_artist'] ??= $tags['artist'];
 
-        // --------------------
         // ARTISTA
-        // --------------------
         $artist = Artist::firstOrCreate([
             'name' => $tags['album_artist']
         ]);
 
-        // --------------------
         // GÉNERO
-        // --------------------
         $genreName = $tags['genre']
             ?? $this->guessGenreFromPath($filePath)
             ?? 'Unknown';
@@ -113,9 +105,7 @@ class ImportMusicCommand extends Command
             ['status' => 'y']
         );
 
-        // --------------------
         // ÁLBUM
-        // --------------------
         $album = Album::firstOrCreate(
             [
                 'title' => $tags['album'] ?? 'Álbum desconocido',
@@ -141,9 +131,7 @@ class ImportMusicCommand extends Command
             $artist->id => ['role' => 'main']
         ]);
 
-        // --------------------
         // CARÁTULA
-        // --------------------
         if (!$album->cover) {
             $cover = $this->extractCover($info, $album->id)
                 ?? $this->findExternalCover(dirname($filePath), $album->id);
@@ -153,10 +141,7 @@ class ImportMusicCommand extends Command
             }
         }
 
-        // --------------------
         // TRACK
-        // --------------------
-        // Intentar extraer número del nombre del archivo si no hay tag
         $trackNumber = $tags['track_number'] ?? 0;
         if ($trackNumber == 0) {
             $filename = pathinfo($filePath, PATHINFO_FILENAME);
@@ -176,13 +161,11 @@ class ImportMusicCommand extends Command
             ]
         );
 
-        // ✅ REORDENAR TODOS LOS TRACKS DEL ÁLBUM (números consecutivos 1..N)
+        // REORDENAR TRACKS
         $this->reorderTracks($album->id);
     }
 
-    /**
-     * Reordena los números de pista de un álbum para que sean consecutivos empezando en 1.
-     */
+    // Reordenar tracks empezando en 1
     private function reorderTracks(int $albumId): void
     {
         $tracks = Track::where('album_id', $albumId)
@@ -200,9 +183,7 @@ class ImportMusicCommand extends Command
         }
     }
 
-    // =========================================================
-    // TAG EXTRACTION (ULTRA ROBUSTO)
-    // =========================================================
+    // TAG EXTRACTION //
     private function extractTags(array $info): array
     {
         $tags = [];
@@ -214,7 +195,7 @@ class ImportMusicCommand extends Command
             $tagSources = $info['tags']['quicktime'];
         }
 
-        // 🔥 QuickTime KEYS (clave para M4A)
+        // QuickTime KEYS (clave para M4A)
         if (isset($info['quicktime']['keys'])) {
             foreach ($info['quicktime']['keys'] as $key => $value) {
                 $tagSources[$key] = [$value];
@@ -285,9 +266,7 @@ class ImportMusicCommand extends Command
         return $tags;
     }
 
-    // =========================================================
     // GENRE HELPER
-    // =========================================================
     private function guessGenreFromPath(string $filePath): ?string
     {
         $path = strtolower($filePath);
@@ -301,9 +280,7 @@ class ImportMusicCommand extends Command
         };
     }
 
-    // =========================================================
     // ALBUM TYPE
-    // =========================================================
     private function normalizeAlbumType(?string $type): string
     {
         return in_array(strtolower($type), ['album', 'single', 'ep'])
@@ -311,9 +288,7 @@ class ImportMusicCommand extends Command
             : 'album';
     }
 
-    // =========================================================
     // COVER
-    // =========================================================
     private function extractCover(array $info, int $albumId): ?string
     {
         $picture = $info['comments']['picture'][0]

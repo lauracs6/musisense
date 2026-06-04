@@ -17,13 +17,9 @@ use App\Http\Requests\UserDestroyRequest;
 use App\Http\Requests\UserPasswordUpdateRequest;
 use App\Http\Resources\UserResource;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-*/
+/* API Routes */
 
-// --- PUBLIC ROUTES (solo login y registro) ---
+// --- PUBLIC ROUTES  ---
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::get('/tracks/{track}/stream', [TrackStreamController::class, 'stream'])->name('tracks.stream');
@@ -31,17 +27,24 @@ Route::get('/tracks/{track}/stream', [TrackStreamController::class, 'stream'])->
 // --- PROTECTED ROUTES (Requiere autenticación y usuario activo) ---
 Route::middleware(['auth:sanctum', 'active'])->group(function () {
 
-    // Contenido principal
+    // Genre Routes
     Route::get('/genres', [GenreController::class, 'index']);
     Route::get('/genres/{genre}', [GenreController::class, 'show']);
+
+    // Artist Routes
     Route::get('/artists', [ArtistController::class, 'index']);
     Route::get('/artists/{artist}', [ArtistController::class, 'show']);
+
+    // Album Routes
     Route::get('/albums', [AlbumController::class, 'index']);
     Route::get('/albums/{album}', [AlbumController::class, 'show']);
+
+    // Track Routes
     Route::get('/tracks', [TrackController::class, 'index']);
     Route::get('/tracks/{track}', [TrackController::class, 'show']);
-    Route::get('/search', SearchController::class);
 
+    // Search Route
+    Route::get('/search', SearchController::class);
 
     // Playlist Routes
     Route::get('/playlists', [PlaylistController::class, 'index']);
@@ -53,7 +56,7 @@ Route::middleware(['auth:sanctum', 'active'])->group(function () {
     Route::post('/playlists/{playlist}/reorder', [PlaylistController::class, 'reorderTracks']);
     Route::delete('/playlists/{playlist}', [PlaylistController::class, 'destroy']);
 
-    // User Profile
+    // User Routes
     Route::get('/user', function (Request $request) {
         return new UserResource($request->user()->load('role'));
     });
@@ -70,7 +73,7 @@ Route::middleware(['auth:sanctum', 'active'])->group(function () {
     // Logout
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    // --- ADMIN ROUTES ---
+    // --- ADMIN ROUTES (Requiere autenticación y usuario administrador) ---
     Route::middleware(['admin'])->group(function () {
         Route::get('/users', [UserController::class, 'index']);
         Route::get('/users/{user}', [UserController::class, 'show']);

@@ -31,7 +31,7 @@ class AlbumController extends Controller
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
-        
+
         // Filter by type
         if ($request->filled('type')) {
     $query->where('type', $request->type);
@@ -45,7 +45,7 @@ class AlbumController extends Controller
         return view('admin.albums.index', compact('albums'));
     }
 
-    
+
     // Show
     public function show(Album $album)
     {

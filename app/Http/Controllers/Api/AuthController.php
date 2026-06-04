@@ -25,7 +25,7 @@ class AuthController extends Controller
             ]);
         }
 
-        // 🔥 Verificar si el usuario está activo
+        // Verificar usuario activo
         if ($user->status === 'n') {
             return response()->json([
                 'message' => 'Your account has been deactivated. Please contact support.'

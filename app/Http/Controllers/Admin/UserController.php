@@ -9,12 +9,12 @@ use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
-    // LISTADO + FILTROS
+    // Index
     public function index(Request $request)
     {
         $query = User::with(['playlists'])->withCount('playlists');
 
-        // SEARCH (name o email)
+        // Search: by username or email
         if ($request->filled('search')) {
             $search = $request->search;
 
@@ -24,7 +24,7 @@ class UserController extends Controller
             });
         }
 
-        // FILTER STATUS
+        // Filter by status
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
@@ -32,12 +32,12 @@ class UserController extends Controller
         $users = $query
             ->orderBy('id')
             ->paginate(9)
-            ->withQueryString(); // mantiene filtros al cambiar página
+            ->withQueryString();
 
         return view('admin.users.index', compact('users'));
     }
 
-    // DETALLE
+    // Show
     public function show(User $user)
     {
         $user->load('playlists');
@@ -45,13 +45,13 @@ class UserController extends Controller
         return view('admin.users.show', compact('user'));
     }
 
-    // EDITAR
+    // Edit
     public function edit(User $user)
     {
         return view('admin.users.edit', compact('user'));
     }
 
-    // ACTUALIZAR
+    // Update
     public function update(Request $request, User $user)
     {
         $data = $request->validate([
@@ -62,14 +62,14 @@ class UserController extends Controller
 
         $user->update($data);
 
-        // si el usuario se desactiva → desactivar playlists
+        // si el usuario se desactiva, desactivar playlists
         if ($data['status'] === 'n') {
             $user->playlists()->update(['status' => 'n']);
         }
-        // si el usuario se activa → activar playlists
+        // si el usuario se activa, activar playlists
         if ($data['status'] === 'y') {
             $user->playlists()->update(['status' => 'y']);
-        }         
+        }
 
         return redirect()
             ->route('admin.users.show', $user)

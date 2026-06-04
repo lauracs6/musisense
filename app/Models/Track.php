@@ -28,9 +28,6 @@ class Track extends Model
         'file_path' => 'string',
     ];
 
-    /**
-     * Relación: una canción pertenece a un álbum.
-     */
     public function album()
     {
         return $this->belongsTo(Album::class);

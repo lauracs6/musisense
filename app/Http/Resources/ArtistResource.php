@@ -12,8 +12,8 @@ class ArtistResource extends JsonResource
         return [
             'id'     => $this->id,
             'name'   => $this->name,
-            'active' => $this->active, // usa el accessor
-            'status' => $this->status, // 'y' o 'n' por si acaso
+            'active' => $this->active,
+            'status' => $this->status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

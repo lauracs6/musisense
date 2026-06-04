@@ -8,9 +8,7 @@ use App\Models\Track;
 
 class TrackController extends Controller
 {
-    /**
-     * Listado de tracks
-     */
+    // Index
     public function index()
     {
         $tracks = Track::with(['album', 'album.artists'])
@@ -20,9 +18,7 @@ class TrackController extends Controller
         return TrackResource::collection($tracks);
     }
 
-    /**
-     * Mostrar un track concreto
-     */
+    // Show
     public function show(Track $track)
     {
         $track->load(['album', 'album.artists']);

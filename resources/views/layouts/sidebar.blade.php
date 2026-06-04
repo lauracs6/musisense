@@ -6,7 +6,7 @@
             <img src="{{ asset('images/MS.png') }}" alt="Logo" class="h-24 w-auto">
         </a>
 
-        <!-- Menú -->
+        <!-- Menu -->
         <ul class="space-y-2 font-medium">
 
             <li class="text-md uppercase text-indigo-400 mt-4">MANAGEMENT</li>
@@ -106,7 +106,7 @@
 
         </ul>
 
-        <!-- Usuario / logout  -->
+        <!-- User  -->
         <div class="absolute bottom-4 left-0 w-full px-3">
             <div class="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-700">
 
@@ -121,7 +121,7 @@
                         d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                 </svg>
 
-                <!-- User + Logout -->
+                <!-- Logout -->
                 <div class="flex-1 flex items-center justify-between">
 
                     <form method="POST" action="{{ route('logout') }}">

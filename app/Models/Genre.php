@@ -8,7 +8,6 @@ class Genre extends Model
 {
     protected $fillable = ['name', 'status'];
 
-    // Un género tiene muchos álbumes
     public function albums()
     {
         return $this->hasMany(Album::class);

@@ -26,7 +26,6 @@ class AlbumResource extends JsonResource
             'artist' => optional($mainArtist)->name,
             'artist_active' => $mainArtist ? $mainArtist->active : null,
 
-            // ✅ Incluir información del género (si la relación está cargada)
             'genre' => $this->whenLoaded('genre', function() {
                 return [
                     'id'     => $this->genre->id,

@@ -13,7 +13,7 @@ class CheckRoleAdmin
         $user = $request->user();
 
         if (!$user || !$user->isAdmin()) {
-            return response()->json(['message' => 'Acceso solo para administradores'], 403);
+            return response()->json(['message' => 'Access denied. Only admins can access this resource.'], 403);
         }
 
         return $next($request);

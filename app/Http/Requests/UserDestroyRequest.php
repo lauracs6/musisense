@@ -11,13 +11,9 @@ class UserDestroyRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // Usuario objetivo de la eliminación (desactivación):
-        // - En DELETE /users/{user} viene desde la ruta
-        // - En DELETE /user se usa el usuario autenticado
         $target = $this->route('user') ?? $this->user();
         $me = $this->user();
 
-        // Autorización: debe haber usuario autenticado y ser admin o el mismo usuario
         return $me && ($me->isAdmin() || $me->id === $target->id);
     }
 
@@ -26,6 +22,6 @@ class UserDestroyRequest extends FormRequest
      */
     public function rules(): array
     {
-        return []; // No se necesitan reglas adicionales
+        return [];
     }
 }

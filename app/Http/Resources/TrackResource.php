@@ -11,7 +11,6 @@ class TrackResource extends JsonResource
     {
         $album = $this->album;
 
-        // Resolvemos el artista principal desde la relación ya cargada
         $mainArtist = null;
         if ($album) {
             if ($album->relationLoaded('artists')) {
@@ -31,7 +30,6 @@ class TrackResource extends JsonResource
             'duration'    => $this->duration,
             'status'      => $this->status,
 
-            // URL absoluta del stream (usando la ruta nombrada)
             'fileurl' => route('tracks.stream', ['track' => $this->id]),
 
             'album' => $album ? [

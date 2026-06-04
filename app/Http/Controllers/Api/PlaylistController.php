@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class PlaylistController extends Controller
 {
-    // GET /api/playlists (Muestra solo las playlists del usuario autenticado)
+    // Index de playlists del usuario autenticado
     public function index()
     {
         $user = Auth::user();
@@ -32,7 +32,7 @@ class PlaylistController extends Controller
         ]);
     }
 
-    // GET /api/playlists/{id} (Detalle de una playlist específica)
+    // Show de playlist de usuario autenticado
     public function show(Playlist $playlist)
     {
         $playlist->load(['user', 'tracks' => function ($q) {
@@ -66,7 +66,7 @@ class PlaylistController extends Controller
         ]);
     }
 
-    // POST /api/playlists (Crear una nueva playlist desde el Front)
+    // Store de playlist de usuario autenticado
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -92,7 +92,7 @@ class PlaylistController extends Controller
         ], 201);
     }
 
-    // POST /api/playlists/{playlist}/tracks (Añadir canción manual)
+    // Función para agregar una canción a la playlist
     public function addTrack(Request $request, Playlist $playlist)
     {
         if ($playlist->user_id !== Auth::id()) {
@@ -112,7 +112,7 @@ class PlaylistController extends Controller
         return response()->json(['message' => 'Track added to playlist']);
     }
 
-    // DELETE /api/playlists/{playlist}/tracks/{track} (Eliminar canción manual)
+    // Función para eliminar una canción de la playlist
     public function removeTrack(Playlist $playlist, Track $track)
     {
         if ($playlist->user_id !== Auth::id()) {
@@ -131,7 +131,7 @@ class PlaylistController extends Controller
         }
     }
 
-    // PUT /api/playlists/{playlist} (Editar datos)
+    // Actualizar playlist de usuario autenticado
     public function update(Request $request, Playlist $playlist)
     {
         if ($playlist->user_id !== Auth::id()) {
@@ -151,7 +151,7 @@ class PlaylistController extends Controller
         ]);
     }
 
-    // POST /api/playlists/{playlist}/reorder (Reordenar canciones por Drag & Drop)
+    // Función para reordenar las canciones de la playlist
     public function reorderTracks(Request $request, Playlist $playlist)
     {
         if ($playlist->user_id !== Auth::id()) return response()->json(['message' => 'Unauthorized'], 403);
@@ -165,7 +165,7 @@ class PlaylistController extends Controller
         return response()->json(['message' => 'Order updated successfully']);
     }
 
-    // DELETE /api/playlists/{playlist} (Borrar Playlist)
+    // Eliminar playlist de usuario autenticado
     public function destroy(Playlist $playlist)
     {
         if ($playlist->user_id !== Auth::id()) {

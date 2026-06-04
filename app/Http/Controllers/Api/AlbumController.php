@@ -10,7 +10,7 @@ class AlbumController extends Controller
 {
     public function index()
     {
-        $albums = Album::with(['artists', 'genre']) // ← añade 'genre'
+        $albums = Album::with(['artists', 'genre'])
             ->orderBy('year', 'asc')
             ->get();
 
@@ -24,7 +24,7 @@ class AlbumController extends Controller
                 $query->orderBy('track_number');
             },
             'artists',
-            'genre', // ← carga el género
+            'genre',
         ]);
 
         return new AlbumResource($album);

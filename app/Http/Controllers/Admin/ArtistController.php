@@ -54,8 +54,7 @@ class ArtistController extends Controller
                 ->update(['artist' => $newName]);
         }
 
-        // 🔥 IMPORTANTE: Activar/desactivar álbumes donde este artista es principal
-        // Obtener los álbumes donde el artista tiene rol 'main'
+        // Activar/desactivar álbumes donde este artista es principal
         $mainAlbums = $artist->albums()->wherePivot('role', 'main')->get();
 
         foreach ($mainAlbums as $album) {
@@ -63,9 +62,7 @@ class ArtistController extends Controller
             if ($request->status === 'n') {
                 $album->status = 'n';
             } else {
-                // Si se reactiva el artista, reactivamos el álbum (solo si no está desactivado por otra razón)
-                // Podemos comprobar si el álbum estaba activo antes? Para simplificar, lo reactivamos.
-                // Pero cuidado: si el álbum tiene otros artistas inactivos, quizás no debería. Asumimos que el artista principal manda.
+                // Si se reactiva el artista, el álbum también
                 $album->status = 'y';
             }
             $album->save();

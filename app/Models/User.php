@@ -12,9 +12,6 @@ class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * Campos asignables masivamente
-     */
     protected $fillable = [
         'username',
         'email',
@@ -23,17 +20,11 @@ class User extends Authenticatable implements MustVerifyEmail
         'status',
     ];
 
-    /**
-     * Campos ocultos
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Casts
-     */
     protected function casts(): array
     {
         return [
@@ -42,17 +33,10 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    /**
-     * Para autenticación
-     */
     public function getAuthPassword(): string
     {
         return $this->password;
     }
-
-    /**
-     * 🔗 RELACIONES
-     */
 
     public function role()
     {
@@ -63,10 +47,6 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Playlist::class);
     }
-
-    /**
-     * Helpers
-     */
 
     public function isAdmin(): bool
     {

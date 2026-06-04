@@ -20,9 +20,6 @@ class UserUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        // Usuario que se está actualizando:
-        // - Si la ruta tiene {user}, se usa ese
-        // - Si no, se trata del usuario autenticado
         $user = $this->route('user') ?? $this->user();
 
         return [
@@ -40,7 +37,6 @@ class UserUpdateRequest extends FormRequest
             ],
             'status' => ['sometimes', 'in:y,n'],
 
-            // Campos sensibles que no deben modificarse desde este endpoint genérico
             'role_id' => ['prohibited'],
             'password' => ['prohibited'],
         ];

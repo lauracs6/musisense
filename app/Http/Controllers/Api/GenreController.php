@@ -8,28 +8,24 @@ use Illuminate\Http\JsonResponse;
 
 class GenreController extends Controller
 {
-    /**
-     * Listado de géneros con sus álbumes
-     */
+    // Index
     public function index(): JsonResponse
     {
         $genres = Genre::with(['albums' => function ($query) {
                 $query->orderBy('title');
             }])
             ->orderBy('name')
-            ->get(); // <- Eliminado el filtro where('status', 'y')
+            ->get();
 
         return response()->json($genres);
     }
 
-    /**
-     * Mostrar un género concreto solo si está activo
-     */
+    // Show
     public function show(Genre $genre): JsonResponse
     {
         if ($genre->status !== 'y') {
             return response()->json([
-                'message' => 'Género no disponible'
+                'message' => 'Genre not found.'
             ], 404);
         }
 

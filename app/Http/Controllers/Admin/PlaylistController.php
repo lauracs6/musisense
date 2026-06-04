@@ -38,17 +38,16 @@ class PlaylistController extends Controller
         return view('admin.playlists.show', compact('playlist'));
     }
 
-    // Edit: only name and status (no track order)
-    public function edit(Playlist $playlist)
-    {
-        // Cargamos las canciones con su posición actual, solo para mostrarlas (sin interfaz de orden)
+    // Edit: name and status
+    public function edit(Playlist $playlist)    {
+
         $playlist->load(['tracks' => function ($q) {
             $q->orderBy('playlist_track.position');
         }]);
         return view('admin.playlists.edit', compact('playlist'));
     }
 
-    // Update: solo nombre y estado (sin gestión de orden de canciones)
+    // Update: nombre y estado
     public function update(Request $request, Playlist $playlist)
     {
         $data = $request->validate([
@@ -69,9 +68,6 @@ class PlaylistController extends Controller
             'name'   => $data['name'],
             'status' => $data['status'],
         ]);
-
-        // 🔥 Eliminada la sincronización de tracks y orden (drag order)
-        // El orden solo lo maneja el frontend del usuario mediante la API correspondiente.
 
         return redirect()
             ->route('admin.playlists.show', $playlist)
