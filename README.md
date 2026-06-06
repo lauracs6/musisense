@@ -1,63 +1,191 @@
-<<<<<<< HEAD
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# MusiSense - Streaming Musical
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+MusiSense es una aplicación web de streaming musical que permite explorar un catálogo de canciones, álbumes, artistas y géneros, así como crear y gestionar playlists de forma interactiva. Construida con Laravel (API REST) y React (SPA), ofrece un reproductor persistente y una experiencia de usuario fluida.
 
-## About Laravel
+## Repositorios
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Backend (API Laravel): [https://github.com/tu-usuario/musisense](https://github.com/tu-usuario/musisense)
+- Frontend (React): [https://github.com/tu-usuario/musiSense-app](https://github.com/tu-usuario/musiSense-app)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Características principales
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Reproductor persistente con cola, shuffle y controles de volumen.
+- Gestión dinámica de playlists: crear, editar, eliminar, añadir/eliminar canciones y reordenar mediante drag & drop.
+- Búsqueda en tiempo real de canciones, álbumes y artistas con debounce.
+- Panel de administración completo (CRUD de usuarios, géneros, artistas, álbumes, canciones y playlists).
+- Actualización en tiempo real mediante polling selectivo y eventos personalizados.
+- Diseño responsive con Tailwind CSS y modo oscuro.
 
-## Learning Laravel
+## Tecnologías utilizadas
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- Backend: Laravel 13, MySQL, Sanctum, getID3
+- Frontend: React 18, Vite, Tailwind CSS, Axios, Lucide React, @hello-pangea/dnd
+- Entorno: Laragon (Apache, MySQL, PHP 8.2)
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Requisitos previos
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+- PHP >= 8.2
+- Composer
+- MySQL >= 8.0
+- Node.js >= 18
+- npm o yarn
 
-## Agentic Development
+## Instalación
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### 1. Clonar los repositorios
 
-```bash
-composer require laravel/boost --dev
 
-php artisan boost:install
+# Backend
+```Bash
+git clone https://github.com/tu-usuario/musisense.git
+cd musisense
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+# Frontend (en otra carpeta)
+```Bash
+git clone https://github.com/tu-usuario/musiSense-app.git
+cd musisense-app
+```
 
-## Contributing
+### 2. Configurar el backend
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```Bash
+cd musisense
+composer install
+cp .env.example .env   # Configurar base de datos y APP_URL
+php artisan key:generate
+php artisan migrate --seed
+php artisan storage:link
+```
 
-## Code of Conduct
+Asegúrate de que `APP_URL=http://musisense.test` y que tienes un servidor virtual apuntando a la carpeta `public`.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## 3. Configurar el frontend
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+cd musisense-app
+npm install
+cp .env.example .env   # Ajustar VITE_API_URL si es necesario
+npm run dev
+```
 
-## License
+El frontend se servirá en `http://localhost:5173` por defecto.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-=======
-# musisense-back
-Mp3 streaming web app, backoffice management
->>>>>>> 97c7b49289f3ef01aa6c520df74b43dc4dc5ab2e
+---
+
+## 4. Configuración del servidor virtual (Laragon recomendado)
+
+Crea un sitio para el backend con dominio `musisense.test` apuntando a la carpeta `public` de Laravel.
+
+Asegúrate de que en `config/sanctum.php` y `config/cors.php` los dominios permitidos incluyan:
+
+- `localhost:5173`
+- `musisense.test`
+
+---
+
+## Importación de música
+
+Desde la carpeta del backend, ejecuta:
+
+```bash
+php artisan music:import "C:\ruta\a\la\carpeta\de\musica"
+```
+
+El comando extrae metadatos mediante **getID3**, normaliza artistas/álbumes/géneros y asigna números de pista consecutivos.
+
+---
+
+# API Endpoints principales
+
+## Públicos
+
+- `POST /api/login`
+- `POST /api/register`
+- `GET /api/tracks/{track}/stream`
+
+## Protegidos (requieren token y usuario activo)
+
+- `GET /api/genres`
+- `GET /api/artists`
+- `GET /api/albums`
+- `GET /api/tracks`
+- `GET /api/search`
+- `GET /api/playlists`
+- `POST /api/playlists`
+- `GET|PUT|DELETE /api/playlists/{id}`
+- `POST /api/playlists/{id}/tracks`
+- `DELETE /api/playlists/{id}/tracks/{track}`
+- `POST /api/playlists/{id}/reorder`
+- `GET|PUT|DELETE /api/user`
+- `PUT /api/user/password`
+- `POST /api/logout`
+
+## Administración (requieren rol admin)
+
+- `GET|PUT|DELETE /api/users`
+- `GET|PUT|DELETE /api/users/{id}`
+
+---
+
+# Lógica destacada
+
+### Activación/desactivación en cascada
+
+- Al desactivar un género, se desactivan sus álbumes y canciones.
+- Al desactivar un artista, se desactivan sus álbumes principales.
+- Al desactivar un usuario, se desactivan sus playlists.
+
+### Polling
+
+Cada 3-10 segundos se refrescan los datos en diferentes componentes para reflejar cambios realizados por el administrador.
+
+### Evento `track-invalidated`
+
+Se dispara cuando una canción deja de ser reproducible:
+
+- Los componentes reaccionan refrescándose.
+- El reproductor se limpia automáticamente.
+
+---
+
+# Estructura del proyecto
+
+## Backend (Laravel)
+
+```text
+musisense/
+├── app/
+│   ├── Http/Controllers/Api/       (API: Albums, Artists, Playlists, etc.)
+│   ├── Http/Controllers/Admin/     (Panel de administración)
+│   ├── Http/Middleware/            (EnsureUserIsActive, CheckRoleAdmin)
+│   └── Models/                     (User, Artist, Album, Track, Playlist...)
+├── database/migrations/            (Esquema de BD)
+├── database/seeders/               (Datos iniciales)
+├── resources/views/admin/          (Vistas Blade del panel)
+└── routes/api.php                  (Endpoints de la API)
+```
+
+## Frontend (React)
+
+```text
+musisense-app/
+├── src/
+│   ├── components/                 (TrackActions, ElectroBorder, MainLayout)
+│   ├── pages/                      (Home, AlbumDetail, PlaylistDetail, Search...)
+│   ├── utils/                      (trackUtils.js)
+│   └── api/axios.js                (Configuración de Axios)
+├── public/                         (Imágenes estáticas)
+└── index.html
+```
+
+---
+
+# Licencia
+
+Proyecto académico sin ánimo de lucro.
+
+- Uso de música bajo derecho de copia privada.
+- Código abierto bajo licencia MIT (para los frameworks utilizados).
